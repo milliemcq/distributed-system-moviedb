@@ -51,8 +51,6 @@ def average_rating(movie_title):
     return "Could not find movie with that title"
 
 
-
-
 print(movie_id_dict)
 print(movie_rating_dict)
 
