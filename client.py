@@ -1,7 +1,10 @@
 import Pyro4
 
-uri = input("What is the Pyro uri of the Hello object? ").strip()
-name = input("What is your name? ").strip()
+artist_name = input("Please give me the name of a movie: ")
+    while artist_name == "":
+        print("Cannot input empty string")
+        artist_name = input("Please give me the name of an artist: ")
+    artist_name = artist_name.lower()
 
-Hello = Pyro4.Proxy(uri)
-print("Response: ", Hello.say_hello(name))
+
+

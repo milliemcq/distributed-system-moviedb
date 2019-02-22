@@ -10,11 +10,12 @@ with open('movies.csv') as csv_file:
     csv_reader = csv.reader(csv_file, delimiter=',')
     first_row = True
     for row in csv_reader:
+        #print(row)
         if first_row:
             first_row = False
         else:
             if row[0] not in movie_id_dict:
-                movie_id_dict[row[0]] = row[1]
+                movie_id_dict[row[0]] = row[1][:-6]
 
 
 """userId,movieId,rating,timestamp"""
@@ -28,9 +29,10 @@ with open('ratings.csv') as csv_file:
         else:
             movie_title = movie_id_dict[row[1]]
             if movie_title not in movie_rating_dict:
-                movie_rating_dict[movie_title] = [row[2]]
+                ratings_user_dict = {row[0]: float(row[2])}
+                movie_rating_dict[movie_title] = ratings_user_dict
             else:
-                movie_rating_dict[movie_title].append(row[2])
+                movie_rating_dict[movie_title][row[0]] = float(row[2])
 
 
 def add_rating(movie_title, rating):
@@ -53,5 +55,3 @@ def average_rating(movie_title):
 
 print(movie_id_dict)
 print(movie_rating_dict)
-
-
