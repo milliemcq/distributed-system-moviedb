@@ -24,6 +24,14 @@ if already_rated:
         instruction = instruction.lower()
 
 
+if already_rated:
+    instruction = input("Would you like to add a rating (update) or view the average rating for this movie? (average)? ")
+    instruction = instruction.lower()
+    while instruction == "" or instruction != "add" or instruction != "average":
+        instruction = input("Would you like to add a rating (update) or view the average rating for this movie? (average)? ")
+        instruction = instruction.lower()
+
+
 
 
 
