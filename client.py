@@ -1,10 +1,12 @@
 import Pyro4
 
-artist_name = input("Please give me the name of a movie: ")
-    while artist_name == "":
+user_id = input("Please enter your user ID: ")
+    while user_id == "":
         print("Cannot input empty string")
-        artist_name = input("Please give me the name of an artist: ")
-    artist_name = artist_name.lower()
+        user_id = input("Please give me the name of an artist: ")
+    user_id = user_id.lower()
+
+
 
 
 
