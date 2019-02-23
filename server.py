@@ -13,13 +13,15 @@ class Database:
     status = "Active"
     counter = 0
 
-    def update_movie_rating(self, movie, id):
+    def update_movie_rating(self, movie, id, user_id):
         #TODO updates movie rating
         return
 
     def get_movie_rating(self, movie):
         #TODO return movie rating for given film
         return
+
+    def get_my_movie_rating(self, movie, user_id):
 
     def go_offline(self):
         Database.status = "Offline"
@@ -35,10 +37,9 @@ class Database:
 
 
 
+def update_status(self):
 
-
-def update_status():
-    pass
+        pass
 
 
 daemon = Pyro4.Daemon()

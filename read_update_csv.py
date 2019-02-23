@@ -15,7 +15,7 @@ with open('movies.csv') as csv_file:
             first_row = False
         else:
             if row[0] not in movie_id_dict:
-                movie_id_dict[row[0]] = row[1][:-6]
+                movie_id_dict[row[0]] = row[1][:-7]
 
 
 """userId,movieId,rating,timestamp"""
