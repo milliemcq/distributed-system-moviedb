@@ -28,9 +28,10 @@ class NameServer:
 
 
 daemon = Pyro4.Daemon()
+uri = daemon.register(NameServer)
 with Pyro4.locateNS() as name_server:
-    name_server.register("nameServer")
+    name_server.register("nameServer", uri, safe=True)
 
-print("Front end server Ready")
+print("FE Server Ready")
 sys.excepthook = Pyro4.util.excepthook
 daemon.requestLoop()
