@@ -16,11 +16,13 @@ for item in server_dict.values():
 print(server_list)
 
 @Pyro4.behavior(instance_mode = "single")
+@Pyro4.expose
 class NameServer:
-
+    print("Looking in Name server")
     def choose_server(self):
+
         for item in server_list:
-            if item.status == 'Online':
+            if item.Database.status == 'Online':
                 return item
 
 
