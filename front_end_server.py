@@ -24,8 +24,8 @@ class NameServer:
         for item in server_list:
             if item.Database.status == 'Online':
                 return item
-
-
+        print("no server online")
+        raise ValueError('No server currently online')
 
 
 

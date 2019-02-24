@@ -9,6 +9,7 @@ id_dict = data.movie_id_dict
 
 # retrieve, submit and update movie ratings
 @Pyro4.behavior(instance_mode = "single")
+@Pyro4.expose
 class Database:
     status = "Active"
     counter = 0
