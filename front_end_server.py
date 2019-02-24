@@ -20,9 +20,9 @@ print(server_list)
 class NameServer:
     print("Looking in Name server")
     def choose_server(self):
-
         for item in server_list:
-            if item.Database.status == 'Online':
+            print(item.get_status())
+            if item.get_status() == 'online':
                 return item
         print("no server online")
         raise ValueError('No server currently online')

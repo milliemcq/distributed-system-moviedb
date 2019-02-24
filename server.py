@@ -11,7 +11,7 @@ id_dict = data.movie_id_dict
 @Pyro4.behavior(instance_mode = "single")
 @Pyro4.expose
 class Database:
-    status = "Active"
+    status = "online"
     counter = 0
 
     def update_movie_rating(self, movie, id, user_id):
@@ -26,16 +26,19 @@ class Database:
         pass
 
     def go_offline(self):
-        Database.status = "Offline"
+        Database.status = "offline"
 
     def overload(self):
-        Database.status = "Overload"
+        Database.status = "overload"
 
     def online(self):
-        Database.status = "Online"
+        Database.status = "online"
 
     def increment_counter(self):
         Database.counter += 1
+
+    def get_status(self):
+        return status
 
 
 
