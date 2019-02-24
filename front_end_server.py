@@ -1,4 +1,5 @@
 import Pyro4
+import sys
 
 with Pyro4.locateNS() as name_server:
     server_dict = name_server.list(prefix="ratings.database.")
@@ -17,9 +18,6 @@ print(server_list)
 @Pyro4.behavior(instance_mode = "single")
 class NameServer:
 
-    def
-
-
     def choose_server(self):
         for item in server_list:
             if item.status == 'Online':
@@ -30,7 +28,9 @@ class NameServer:
 
 
 daemon = Pyro4.Daemon()
-uri = daemon.register(NameServer)
 with Pyro4.locateNS() as name_server:
-    name_server.register("nameServer." + str(uri), uri, safe=True)
+    name_server.register("nameServer")
 
+print("Front end server Ready")
+sys.excepthook = Pyro4.util.excepthook
+daemon.requestLoop()

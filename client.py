@@ -5,9 +5,13 @@ import Pyro4
 
 
 with Pyro4.locateNS() as name_server:
-    uri = name_server.lookup(prefix = "nameServer.")
+    uri = name_server.lookup("nameServer")
 
 front_end_server = Pyro4.Proxy(uri)
+try:
+    front_end_server.choose_server()
+except:
+    print("Couldn't Choose Server")
 
 
 
