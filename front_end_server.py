@@ -12,18 +12,20 @@ for item in server_dict.values():
     server = Pyro4.Proxy(item)
     server_list.append(server)
 
+print(server_list)
+
 @Pyro4.behavior(instance_mode = "single")
 class NameServer:
 
-
+    def
 
 
     def choose_server(self):
         for item in server_list:
+            if item.status == 'Online':
+                return item
 
 
-    def choose_server():
-        pass
 
 
 
@@ -32,5 +34,3 @@ uri = daemon.register(NameServer)
 with Pyro4.locateNS() as name_server:
     name_server.register("nameServer." + str(uri), uri, safe=True)
 
-
-# self.server.look_up

@@ -1,5 +1,20 @@
 import Pyro4
 
+
+
+
+
+with Pyro4.locateNS() as name_server:
+    uri = name_server.lookup(prefix = "nameServer.")
+
+front_end_server = Pyro4.Proxy(uri)
+
+
+
+
+
+
+
 user_id = input("Please enter your user ID: ")
 while user_id == "":
     print("Cannot input empty string")

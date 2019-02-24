@@ -22,6 +22,7 @@ class Database:
         return
 
     def get_my_movie_rating(self, movie, user_id):
+        pass
 
     def go_offline(self):
         Database.status = "Offline"
