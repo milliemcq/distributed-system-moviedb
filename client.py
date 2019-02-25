@@ -26,34 +26,51 @@ ratings = server.get_rating_dict()
 
 print(ratings)
 
-movie_name = input("What movie would you like to open?: ")
-while movie_name == "":
-    print("Cannot input empty string")
+already_rated = False
+
+while True:
     movie_name = input("What movie would you like to open?: ")
+    while movie_name == "":
+        print("Cannot input empty string")
+        movie_name = input("What movie would you like to open?: ")
+
+    movie_dict = server.find_movie(movie_name)
+    if movie_dict == "No movie found":
+        print("That movie couldn't be found in our Database")
+        #TODO would you like to add it?
+        continue
+    else:
+        if user_id in movie_dict:
+            print("Making Already Rated True")
+            already_rated = True
+            break
+        else:
+            break
 
 
 
-print(server.find_movie(movie_name))
+if already_rated:
+    instruction = input("Would you like to update your rating (update) or view the average rating for this movie? (average)? ")
+    instruction = instruction.lower()
+    while instruction == "" or instruction != "update" or instruction != "average":
+        instruction = input(
+            "Would you like to update your rating (update) or view the average rating for this movie? (average)? ")
+        instruction = instruction.lower()
+else:
+    instruction = input("Would you like to add a rating (add) or view the average rating for this movie? (average)? ")
+    instruction = instruction.lower()
+    while instruction == "" or instruction != "add" or instruction != "average":
+        instruction = input("Would you like to add a rating (update) or view the average rating for this movie? (average)? ")
+        instruction = instruction.lower()
 
-already_rated = True
 
 
 #update a movie
-def update_movie(movie_title, already_rated):
-    if already_rated:
-        instruction = input("Would you like to update your rating (update) or view the average rating for this movie? (average)? ")
-        instruction = instruction.lower()
-        while instruction == "" or instruction != "update" or instruction != "average":
-            instruction = input("Would you like to update your rating (update) or view the average rating for this movie? (average)? ")
-            instruction = instruction.lower()
+def update_movie(movie_title):
 
 
-    if already_rated:
-        instruction = input("Would you like to add a rating (update) or view the average rating for this movie? (average)? ")
-        instruction = instruction.lower()
-        while instruction == "" or instruction != "add" or instruction != "average":
-            instruction = input("Would you like to add a rating (update) or view the average rating for this movie? (average)? ")
-            instruction = instruction.lower()
+
+
 
 
 
