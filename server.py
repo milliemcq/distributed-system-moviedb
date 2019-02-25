@@ -11,8 +11,7 @@ id_dict = data.movie_id_dict
 @Pyro4.behavior(instance_mode = "single")
 @Pyro4.expose
 class Database:
-    status = "online"
-    counter = 0
+    ratings = rating_dict
 
     def update_movie_rating(self, movie, id, user_id):
         #TODO updates movie rating
@@ -40,6 +39,31 @@ class Database:
     def get_status(self):
         return status
 
+    def add_rating(self, movie_title, rating):
+        if movie_title in self.rating_dict:
+            self.rating_dict[movie_title].append(rating)
+        else:
+            return "Could not find Movie with that title"
+
+    def average_rating(self, movie_title):
+        if movie_title in self.rating_dict:
+            total = 0
+            number_ratings = 0
+            for item in self.rating_dict[movie_title]:
+                total += item
+                number_ratings += 1
+            return total / number_ratings
+
+        return "Could not find movie with that title"
+
+    def find_movie(self, movie_title):
+        if movie_title in rating_dict:
+            return rating_dict[movie_title]
+        else:
+            return "No movie found"
+
+    def get_rating_dict(self):
+        return rating_dict
 
 
 def update_status(self):
