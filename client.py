@@ -64,8 +64,8 @@ def run_instruction(instruction):
                     raise ValueError  # this will send it to the print message and back to the input option
                 break
             except ValueError:
-                print("Invalid integer. The number must be in the range of 1-10.")
-        print("")
+                print("Invalid rating. The number must be in the range of 0-10.")
+        server.add_rating(user_id, user_rating)
     else:
         print("No Valid input entered")
 
