@@ -39,9 +39,9 @@ class Database:
     def get_status(self):
         return status
 
-    def add_rating(self, movie_title, rating):
+    def add_rating(self, movie_title, user_id, rating):
         if movie_title in rating_dict:
-            rating_dict[movie_title].append(rating)
+            rating_dict[movie_title][user_id] = rating
         else:
             return "Could not find Movie with that title"
 

@@ -52,20 +52,26 @@ while True:
 
 
 def run_instruction(instruction):
+
+    #update a users rating in server database
     if instruction == "update":
         print("Updating movie rating")
+
+    #return the average rating for a given film in server
     elif instruction == "average":
         print(server.average_rating(movie_name))
+
+    #add a rating to a movie in the database
     elif instruction == "add":
         while True:
             try:
-                user_rating = float(input('Please enter a rating for the movie ' + movie_name + ' : '))
-                if number1 < 0 or number1 > 10:
-                    raise ValueError  # this will send it to the print message and back to the input option
+                user_rating = float(input('Please enter a rating for the movie ' + movie_name + ': '))
+                if user_rating < 0 or user_rating > 10:
+                    raise ValueError
                 break
             except ValueError:
-                print("Invalid rating. The number must be in the range of 0-10.")
-        server.add_rating(user_id, user_rating)
+                print("Invalid rating. The rating must be in the range 0-10.")
+        server.add_rating(movie_name, user_id, user_rating)
     else:
         print("No Valid input entered")
 
