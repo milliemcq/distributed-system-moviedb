@@ -5,22 +5,12 @@ import sys
 status = "online"
 
 rating_dict = data.movie_rating_dict
-id_dict = data.movie_id_dict
 
 # retrieve, submit and update movie ratings
 @Pyro4.behavior(instance_mode = "single")
 @Pyro4.expose
 class Database:
     ratings = rating_dict
-
-    def update_movie_rating(self, movie, id, user_id):
-        #TODO updates movie rating
-        return
-
-    def get_movie_rating(self, movie):
-        #TODO return movie rating for given film
-        return
-
 
 
     def go_offline(self):

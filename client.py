@@ -20,12 +20,9 @@ try:
 except:
     print("Couldn't find a server online")
 
-
-
-
-ratings = server.get_rating_dict()
-
-print(ratings)
+#TODO - Delete this at the end
+rating_horns = server.find_movie("Horns")
+print(rating_horns)
 
 already_rated = False
 current_rating = None
