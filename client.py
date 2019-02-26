@@ -9,6 +9,7 @@ while user_id == "":
 user_id = user_id.lower()
 
 
+#TODO when to connect to server?
 with Pyro4.locateNS() as name_server:
     uri = name_server.lookup("nameServer")
 
@@ -46,6 +47,20 @@ while True:
             break
         else:
             break
+
+
+
+
+def run_instruction(instruction):
+    if instruction == "update":
+        print("Updating movie rating")
+    elif instruction == "average":
+        server.average_rating(movie_name)
+    elif instruction == "add":
+        print("")
+    else:
+        print("No Valid input entered")
+
 
 
 
