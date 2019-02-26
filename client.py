@@ -18,7 +18,7 @@ try:
     server = front_end_server.choose_server()
 
 except:
-    print("Couldn't Choose Server")
+    print("Couldn't find a server online")
 
 
 
@@ -57,6 +57,14 @@ def run_instruction(instruction):
     elif instruction == "average":
         print(server.average_rating(movie_name))
     elif instruction == "add":
+        while True:
+            try:
+                user_rating = float(input('Please enter a rating for the movie ' + movie_name + ' : '))
+                if number1 < 0 or number1 > 10:
+                    raise ValueError  # this will send it to the print message and back to the input option
+                break
+            except ValueError:
+                print("Invalid integer. The number must be in the range of 1-10.")
         print("")
     else:
         print("No Valid input entered")
