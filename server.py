@@ -21,8 +21,7 @@ class Database:
         #TODO return movie rating for given film
         return
 
-    def get_my_movie_rating(self, movie, user_id):
-        pass
+
 
     def go_offline(self):
         Database.status = "offline"
@@ -61,6 +60,9 @@ class Database:
             return rating_dict[movie_title]
         else:
             return "No movie found"
+
+    def get_user_rating(self, movie, user_id):
+        return rating_dict[movie][user_id]
 
     def get_rating_dict(self):
         return rating_dict

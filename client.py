@@ -28,6 +28,7 @@ ratings = server.get_rating_dict()
 print(ratings)
 
 already_rated = False
+current_rating = None
 
 while True:
     movie_name = input("What movie would you like to open?: ")
@@ -43,6 +44,7 @@ while True:
     else:
         if user_id in movie_dict:
             print("Making Already Rated True")
+            current_rating = server.get_user_rating(movie_name, user_id)
             already_rated = True
             break
         else:
@@ -51,11 +53,21 @@ while True:
 
 
 
-def run_instruction(instruction):
+def run_instruction(instruction, current_rating):
 
     #update a users rating in server database
     if instruction == "update":
-        print("Updating movie rating")
+        print("Current rating is currently" + str(current_rating))
+        while True:
+            try:
+                user_rating = float(input('Please enter an updating rating for the movie ' + movie_name
+                                          + ', your current rating is ' + str(current_rating) + ': '))
+                if user_rating < 0 or user_rating > 10:
+                    raise ValueError
+                break
+            except ValueError:
+                print("Invalid rating. The rating must be in the range 0-10.")
+        server.add_rating(movie_name, user_id, user_rating)
 
     #return the average rating for a given film in server
     elif instruction == "average":
@@ -85,14 +97,15 @@ if already_rated:
         instruction = input(
             "Would you like to update your rating (update) or view the average rating for this movie? (average)? ")
         instruction = instruction.lower()
-    run_instruction(instruction)
+    print(current_rating)
+    run_instruction(instruction, current_rating)
 else:
     instruction = input("Would you like to add a rating (add) or view the average rating for this movie? (average)? ")
     instruction = instruction.lower()
     while instruction == "":
         instruction = input("Would you like to add a rating (update) or view the average rating for this movie? (average)? ")
         instruction = instruction.lower()
-    run_instruction(instruction)
+    run_instruction(instruction, current_rating)
 
 
 
