@@ -40,17 +40,17 @@ class Database:
         return status
 
     def add_rating(self, movie_title, rating):
-        if movie_title in self.rating_dict:
-            self.rating_dict[movie_title].append(rating)
+        if movie_title in rating_dict:
+            rating_dict[movie_title].append(rating)
         else:
             return "Could not find Movie with that title"
 
     def average_rating(self, movie_title):
-        if movie_title in self.rating_dict:
+        if movie_title in rating_dict:
             total = 0
             number_ratings = 0
-            for item in self.rating_dict[movie_title]:
-                total += item
+            for item in rating_dict[movie_title].keys():
+                total += rating_dict[movie_title][item]
                 number_ratings += 1
             return total / number_ratings
 

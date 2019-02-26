@@ -55,7 +55,7 @@ def run_instruction(instruction):
     if instruction == "update":
         print("Updating movie rating")
     elif instruction == "average":
-        server.average_rating(movie_name)
+        print(server.average_rating(movie_name))
     elif instruction == "add":
         print("")
     else:
@@ -67,26 +67,18 @@ def run_instruction(instruction):
 if already_rated:
     instruction = input("Would you like to update your rating (update) or view the average rating for this movie? (average)? ")
     instruction = instruction.lower()
-    while instruction == "" or instruction != "update" or instruction != "average":
+    while instruction == "":
         instruction = input(
             "Would you like to update your rating (update) or view the average rating for this movie? (average)? ")
         instruction = instruction.lower()
+    run_instruction(instruction)
 else:
     instruction = input("Would you like to add a rating (add) or view the average rating for this movie? (average)? ")
     instruction = instruction.lower()
-    while instruction == "" or instruction != "add" or instruction != "average":
+    while instruction == "":
         instruction = input("Would you like to add a rating (update) or view the average rating for this movie? (average)? ")
         instruction = instruction.lower()
-
-
-
-#update a movie
-def update_movie(movie_title):
-
-
-
-
-
+    run_instruction(instruction)
 
 
 
