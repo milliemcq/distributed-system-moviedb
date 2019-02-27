@@ -11,12 +11,11 @@ user_id = user_id.lower()
 
 #TODO when to connect to server?
 with Pyro4.locateNS() as name_server:
-    uri = name_server.lookup("nameServer")
+    uri = name_server.lookup("frontEnd")
 
 front_end_server = Pyro4.Proxy(uri)
 try:
     server = front_end_server.choose_server()
-
 except:
     print("Couldn't find a server online")
 
@@ -64,11 +63,12 @@ def run_instruction(instruction, current_rating):
                 break
             except ValueError:
                 print("Invalid rating. The rating must be in the range 0-10.")
-        server.add_rating(movie_name, user_id, user_rating)
+
+        front_end_server.add_movie_rating(movie_name, user_id, user_rating)
 
     #return the average rating for a given film in server
     elif instruction == "average":
-        print(server.average_rating(movie_name))
+        print(front_end_server.average_rating(movie_name))
 
     #add a rating to a movie in the database
     elif instruction == "add":
