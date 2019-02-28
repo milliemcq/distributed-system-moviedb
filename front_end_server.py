@@ -25,18 +25,20 @@ class NameServer:
         for i in range(curr_server, len(server_list)):
             #print(server_list[i].get_status())
             if server_list[i].get_status() == 'online':
-                return [i, server_list[i]]
+                return [server_list[i], i]
         print("no server online")
         return 1
 
 
+    #Movie rating is added and current highest timestamp for that server returned
     def add_movie_rating(self, movie_name, user_id, rating):
         chosen_server = self.choose_server(0)
         if chosen_server == 1:
             return "No current server available"
         server = chosen_server[0]
         #TODO Return timestamp vector here and update 'global' timestamp
-        last_timestamp = self.server.new_update(movie_name, user_id, rating)
+        replica_value_timestamp = self.server.new_update(movie_name, user_id, rating)
+
 
 
     #iterate over servers until one has the highest timestamp, and collect the results from this server.
