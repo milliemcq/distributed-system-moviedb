@@ -31,6 +31,7 @@ class NameServer:
           self.server = self.choose_server()
         except:
             return "No online server found"
+        #TODO Return timestamp vector here and update 'global' timestamp
         self.server.new_update(movie_name, user_id, rating)
 
     def average_rating(self, movie_name):

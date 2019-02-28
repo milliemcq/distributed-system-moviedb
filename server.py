@@ -70,11 +70,8 @@ class Database:
             for item in Database.all_updates:
                 if item[0] == timestamp:
                     return "Update already processed"
-
             Database.update_list.append((timestamp, update_type, movie_name, user_id, rating))
-
             Database.replica_timestamp[this_server_num] += 1
-
             return Database.value_timestamp
         else:
             for item in Database.all_updates:
@@ -89,11 +86,18 @@ class Database:
 
 
     def new_query(self, timestamp, update_type, movie_name, user_id):
-        if timestamp[this_server_num] < timestamp_vector[this_server_num]:
+        greatest_time = compare_timestamp(timestamp)
+        if greatest_time < timestamp_vector[this_server_num]:
             return Database.average_rating(movie_name)
         Database.hold_back_queue.append((timestamp, update_type, movie_name, user_id))
         return True
 
+    def compare_timestamp(self, timestamps):
+        num = 0
+        for item in timestamps:
+            if item > num:
+                num = item
+        return num
 
 def sort_tuple(item):
     return item[0][this_server_num]
@@ -114,10 +118,6 @@ def gossip():
     for item in Database.update_list:
         for other_server in server_list:
             other_server.new_update(item[0], item[1], item[2], item[3], item[4])
-
-
-
-
 
 
 with Pyro4.locateNS() as name_server:
