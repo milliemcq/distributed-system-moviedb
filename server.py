@@ -85,12 +85,13 @@ class Database:
             return Database.value_timestamp
 
 
-    def new_query(self, timestamp, update_type, movie_name, user_id):
+    def new_query(self, timestamp, movie_name):
         greatest_time = compare_timestamp(timestamp)
         if greatest_time < timestamp_vector[this_server_num]:
             return Database.average_rating(movie_name)
-        Database.hold_back_queue.append((timestamp, update_type, movie_name, user_id))
-        return True
+        #Database.hold_back_queue.append((timestamp, update_type, movie_name, user_id))
+        return 0
+
 
     def compare_timestamp(self, timestamps):
         num = 0

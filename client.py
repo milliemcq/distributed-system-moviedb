@@ -9,7 +9,7 @@ while user_id == "":
 user_id = user_id.lower()
 
 
-#TODO when to connect to server?
+#Connecting to the front end server
 with Pyro4.locateNS() as name_server:
     uri = name_server.lookup("frontEnd")
 
@@ -19,10 +19,11 @@ try:
 except:
     print("Couldn't find a server online")
 
-#TODO - Delete this at the end
+"""
 rating_horns = server.find_movie("Horns")
-print(rating_horns)
+print(rating_horns)"""
 
+#TODO - Figure out how to work with already_rated?? - Will need to check against timestamp (as with query)
 already_rated = False
 current_rating = None
 
@@ -40,7 +41,7 @@ while True:
     else:
         if user_id in movie_dict:
             print("Making Already Rated True")
-            current_rating = server.get_user_rating(movie_name, user_id)
+            #current_rating = server.get_user_rating(movie_name, user_id)
             already_rated = True
             break
         else:
