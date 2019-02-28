@@ -64,16 +64,29 @@ class Database:
     def get_rating_dict(self):
         return rating_dict
 
-    def new_update(self, timestamp, update_type, movie_name, user_id, rating):
-        for item in Database.all_updates:
-            if item[0] == timestamp:
-                return "Update already processed"
+    def new_update(self, timestamp, update_type, movie_name, user_id, rating, gossip=False):
+        if gossip:
+            #timestamp_table.append(timestamp) - find out what server this is coming from ^^ pass form above
+            for item in Database.all_updates:
+                if item[0] == timestamp:
+                    return "Update already processed"
 
-        Database.update_list.append((timestamp, update_type, movie_name, user_id, rating))
+            Database.update_list.append((timestamp, update_type, movie_name, user_id, rating))
 
-        Database.replica_timestamp[this_server_num] += 1
+            Database.replica_timestamp[this_server_num] += 1
 
-        return Database.value_timestamp
+            return Database.value_timestamp
+        else:
+            for item in Database.all_updates:
+                if item[0] == timestamp:
+                    return "Update already processed"
+
+            Database.update_list.append((timestamp, update_type, movie_name, user_id, rating))
+
+            Database.replica_timestamp[this_server_num] += 1
+
+            return Database.value_timestamp
+
 
     def new_query(self, timestamp, update_type, movie_name, user_id):
         if timestamp[this_server_num] < timestamp_vector[this_server_num]:
@@ -88,19 +101,47 @@ def sort_tuple(item):
 
 def gossip():
     Database.update_list = sorted(Database.update_list, key=sort_tuple)
+    for item in Database.update_list:
+        if item[0][this_server_num] == Database.value_timestamp[this_server_num] + 1:
+            Database.add_rating(item[2], item[3], item[4])
+            Database.all_updates.append((item[0], item[1], item[2], item[3], item[4]))
+            Database.value_timestamp[this_server_num] += 1
+
+    for item in Database.hold_back_queue:
+        #ANSWER queries and send back to the right client
+        pass
+
+    for item in Database.update_list:
+        for other_server in server_list:
+            other_server.new_update(item[0], item[1], item[2], item[3], item[4])
+
+
+
+
 
 
 with Pyro4.locateNS() as name_server:
     server_dict = name_server.list(prefix="ratings.database.")
 
-num_servers = len(server_dict.keys()) - 1
+daemon = Pyro4.Daemon()
+uri = daemon.register(Database)
 
-timestamp_table = [[] for _ in range(num_servers)]
+num_servers = len(server_dict.keys()) - 1
 
 this_server_num = num_servers + 1
 
-daemon = Pyro4.Daemon()
-uri = daemon.register(Database)
+server_list = []
+
+for item in server_dict.values():
+    if item != uri:
+        server = Pyro4.Proxy(item)
+        if server.get_status == "online":
+            server_list.append(server)
+
+timestamp_table = [[] for _ in range(num_servers)]
+
+
+
 
 with Pyro4.locateNS() as name_server:
     name_server.register("ratings.database." + str(num_servers + 1), uri, safe=True)
