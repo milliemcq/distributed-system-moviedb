@@ -27,6 +27,8 @@ print(rating_horns)"""
 already_rated = False
 current_rating = None
 
+
+"""
 while True:
     movie_name = input("What movie would you like to open?: ")
     while movie_name == "":
@@ -46,6 +48,7 @@ while True:
             break
         else:
             break
+"""
 
 
 
@@ -87,7 +90,7 @@ def run_instruction(instruction, current_rating):
 
 
 
-
+"""
 if already_rated:
     instruction = input("Would you like to update your rating (update) or view the average rating for this movie? (average)? ")
     instruction = instruction.lower()
@@ -103,8 +106,18 @@ else:
     while instruction == "":
         instruction = input("Would you like to add a rating (update) or view the average rating for this movie? (average)? ")
         instruction = instruction.lower()
-    run_instruction(instruction, current_rating)
+    run_instruction(instruction, current_rating)"""
 
+
+if already_rated:
+    instruction = input("Would you like to add/update a rating (add/update) or view the average rating for this movie? (average)? ")
+    instruction = instruction.lower()
+    while instruction == "":
+        instruction = input(
+            "Would you like to update your rating (update) or view the average rating for this movie? (average)? ")
+        instruction = instruction.lower()
+    print(current_rating)
+    run_instruction(instruction, current_rating)
 
 
 

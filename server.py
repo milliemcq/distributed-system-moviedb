@@ -112,7 +112,7 @@ def gossip():
             Database.value_timestamp[this_server_num] += 1
 
     for item in Database.hold_back_queue:
-        #ANSWER queries and send back to the right client
+        #TODO - maybe not need this?
         pass
 
     for item in Database.update_list:
