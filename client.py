@@ -15,7 +15,7 @@ with Pyro4.locateNS() as name_server:
 
 front_end_server = Pyro4.Proxy(uri)
 try:
-    server = front_end_server.choose_server()
+    server = front_end_server.choose_server(0)
 except:
     print("Couldn't find a server online")
 
@@ -109,15 +109,15 @@ else:
     run_instruction(instruction, current_rating)"""
 
 
-if already_rated:
-    instruction = input("Would you like to add/update a rating (add/update) or view the average rating for this movie? (average)? ")
+
+instruction = input("Would you like to add/update a rating (add/update) or view the average rating for this movie? (average)? ")
+instruction = instruction.lower()
+while instruction == "":
+    instruction = input(
+        "Would you like to update your rating (update) or view the average rating for this movie? (average)? ")
     instruction = instruction.lower()
-    while instruction == "":
-        instruction = input(
-            "Would you like to update your rating (update) or view the average rating for this movie? (average)? ")
-        instruction = instruction.lower()
-    print(current_rating)
-    run_instruction(instruction, current_rating)
+print(current_rating)
+run_instruction(instruction, current_rating)
 
 
 
