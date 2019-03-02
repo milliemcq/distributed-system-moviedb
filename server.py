@@ -127,6 +127,7 @@ daemon = Pyro4.Daemon()
 uri = daemon.register(Database)
 
 num_servers = len(server_dict.keys()) - 1
+#print(num_servers)
 
 this_server_num = num_servers + 1
 
@@ -149,7 +150,7 @@ with Pyro4.locateNS() as name_server:
 print("Server Ready: Object URI = " + str(num_servers + 1))
 
 sys.excepthook = Pyro4.util.excepthook
-daemon.requestLoop(gossip)
+daemon.requestLoop()
 
 
 
