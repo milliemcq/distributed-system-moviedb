@@ -24,30 +24,7 @@ front_end_server = Pyro4.Proxy(uri)
 already_rated = False
 current_rating = None
 
-
-"""
-while True:
-    movie_name = input("What movie would you like to open?: ")
-    while movie_name == "":
-        print("Cannot input empty string")
-        movie_name = input("What movie would you like to open?: ")
-
-    movie_dict = server.find_movie(movie_name)
-    if movie_dict == "No movie found":
-        print("That movie couldn't be found in our Database")
-        #TODO would you like to add it?
-        continue
-    else:
-        if user_id in movie_dict:
-            print("Making Already Rated True")
-            #current_rating = server.get_user_rating(movie_name, user_id)
-            already_rated = True
-            break
-        else:
-            break
-"""
-
-
+#TODO - Get already rated?
 
 
 def run_instruction(instruction, current_rating):
@@ -88,25 +65,6 @@ def run_instruction(instruction, current_rating):
 
 
 
-"""
-if already_rated:
-    instruction = input("Would you like to update your rating (update) or view the average rating for this movie? (average)? ")
-    instruction = instruction.lower()
-    while instruction == "":
-        instruction = input(
-            "Would you like to update your rating (update) or view the average rating for this movie? (average)? ")
-        instruction = instruction.lower()
-    print(current_rating)
-    run_instruction(instruction, current_rating)
-else:
-    instruction = input("Would you like to add a rating (add) or view the average rating for this movie? (average)? ")
-    instruction = instruction.lower()
-    while instruction == "":
-        instruction = input("Would you like to add a rating (update) or view the average rating for this movie? (average)? ")
-        instruction = instruction.lower()
-    run_instruction(instruction, current_rating)"""
-
-
 
 movie_name = input("What movie would you like to open?: ")
 while movie_name == "":
@@ -119,7 +77,7 @@ while instruction == "":
     instruction = input(
         "Would you like to update your rating (update) or view the average rating for this movie? (average)? ")
     instruction = instruction.lower()
-print(current_rating)
+
 run_instruction(instruction, current_rating)
 
 
