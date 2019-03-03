@@ -66,6 +66,7 @@ class Database:
         return rating_dict
 
     def new_update(self, timestamp, update_type, movie_name, user_id, rating, gossip=False):
+        print(str(Database.average_rating(self, movie_name)))
         if gossip:
             #timestamp_table.append(timestamp) - find out what server this is coming from ^^ pass form above
             for item in Database.all_updates:
@@ -82,7 +83,7 @@ class Database:
             Database.update_list.append((timestamp, update_type, movie_name, user_id, rating))
 
             Database.replica_timestamp[this_server_num] += 1
-
+            print("Should be different + " + str(Database.average_rating(self, movie_name)))
             return Database.value_timestamp
 
 
@@ -115,6 +116,7 @@ def gossip():
             Database.add_rating(item[2], item[3], item[4])
             Database.all_updates.append((item[0], item[1], item[2], item[3], item[4]))
             Database.value_timestamp[this_server_num] += 1
+            print("Gossiping new shit")
 
     for item in Database.hold_back_queue:
         #TODO - maybe not need this?
@@ -124,6 +126,7 @@ def gossip():
         for other_server in server_list:
             other_server.new_update(item[0], item[1], item[2], item[3], item[4])
 
+    #print("Should be different + " + str(Database.average_rating("Horns")))
     return True
 
 

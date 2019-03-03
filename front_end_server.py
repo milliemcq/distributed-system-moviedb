@@ -37,7 +37,7 @@ class NameServer:
             return "No current server available"
         server = chosen_server[0]
         #TODO Return timestamp vector here and update 'global' timestamp
-        replica_value_timestamp = self.server.new_update(movie_name, user_id, rating)
+        replica_value_timestamp = server.new_update(movie_name, user_id, rating)
 
 
 

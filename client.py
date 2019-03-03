@@ -50,7 +50,7 @@ def run_instruction(instruction, current_rating):
         print("Average rating for " + movie_name + " is: " + average_rating)
 
     #add a rating to a movie in the database
-    elif instruction == "add":
+    elif instruction == "add" or instruction == "update":
         while True:
             try:
                 user_rating = float(input('Please enter a rating for the movie ' + movie_name + ': '))
@@ -59,7 +59,7 @@ def run_instruction(instruction, current_rating):
                 break
             except ValueError:
                 print("Invalid rating. The rating must be in the range 0-10.")
-        server.add_rating(movie_name, user_id, user_rating)
+        front_end_server.add_movie_rating(movie_name, user_id, user_rating)
     else:
         print("No Valid input entered")
 
