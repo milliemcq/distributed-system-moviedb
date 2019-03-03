@@ -72,6 +72,7 @@ class Database:
             for item in Database.all_updates:
                 if item[0] == timestamp:
                     return "Update already processed"
+            #TODO - UPDATING DATABASE NOT WORKING, NO RATING FUNC
             Database.update_list.append((timestamp, update_type, movie_name, user_id, rating))
             Database.replica_timestamp[this_server_num] += 1
             return Database.value_timestamp
@@ -80,9 +81,10 @@ class Database:
                 if item[0] == timestamp:
                     return "Update already processed"
 
-            Database.update_list.append((timestamp, update_type, movie_name, user_id, rating))
-
             Database.replica_timestamp[this_server_num] += 1
+            Database.update_list.append((Database.replica_timestamp, update_type, movie_name, user_id, rating))
+
+
             print("Should be different + " + str(Database.average_rating(self, movie_name)))
             return Database.value_timestamp
 
