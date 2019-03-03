@@ -64,21 +64,23 @@ def run_instruction(instruction, current_rating):
         print("No Valid input entered")
 
 
-
-
-movie_name = input("What movie would you like to open?: ")
-while movie_name == "":
-    print("Cannot input empty string")
+instruction = ""
+while instruction != "quit":
+    movie_name = ""
+    instruction = ""
     movie_name = input("What movie would you like to open?: ")
+    while movie_name == "":
+        print("Cannot input empty string")
+        movie_name = input("What movie would you like to open?: ")
 
-instruction = input("Would you like to add/update a rating (add/update) or view the average rating for this movie? (average)? ")
-instruction = instruction.lower()
-while instruction == "":
-    instruction = input(
-        "Would you like to update your rating (update) or view the average rating for this movie? (average)? ")
+    instruction = input("Would you like to add/update a rating (add/update) or view the average rating for this movie? (average)? ")
     instruction = instruction.lower()
+    while instruction == "":
+        instruction = input(
+            "Would you like to update your rating (update) or view the average rating for this movie? (average)? ")
+        instruction = instruction.lower()
 
-run_instruction(instruction, current_rating)
+    run_instruction(instruction, current_rating)
 
 
 
