@@ -86,7 +86,7 @@ class Database:
 
 
     def new_query(self, timestamp, movie_name):
-        greatest_time = compare_timestamp(timestamp)
+        greatest_time = Database.compare_timestamp(timestamp)
         if greatest_time <= Database.value_timestamp[this_server_num]:
             return Database.average_rating(movie_name)
         return 0

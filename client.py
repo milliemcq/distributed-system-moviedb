@@ -110,6 +110,11 @@ else:
 
 
 
+movie_name = input("What movie would you like to open?: ")
+while movie_name == "":
+    print("Cannot input empty string")
+    movie_name = input("What movie would you like to open?: ")
+
 instruction = input("Would you like to add/update a rating (add/update) or view the average rating for this movie? (average)? ")
 instruction = instruction.lower()
 while instruction == "":
