@@ -17,7 +17,7 @@ print(server_list)
 
 @Pyro4.expose
 class NameServer:
-    timestamp_vector = [0, 0, 0]
+    fe_timestamp_vector = [0, 0, 0]
     print("Looking in Name server")
 
     #chooses the first available online server, returns a list [0] = Server number [1] = server
@@ -37,7 +37,7 @@ class NameServer:
             return "No current server available"
         server = chosen_server[0]
         #TODO Return timestamp vector here and update 'global' timestamp
-        replica_value_timestamp = server.new_update(movie_name, user_id, rating)
+        replica_value_timestamp = server.new_update(self.fe_timestamp_vector, "update", movie_name, user_id, rating)
 
 
 
