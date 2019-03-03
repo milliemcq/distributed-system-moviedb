@@ -4,16 +4,7 @@ import sys
 with Pyro4.locateNS() as name_server:
     server_dict = name_server.list(prefix="ratings.database.")
 
-num_servers = len(server_dict.keys())
 
-servers = server_dict.values()
-server_list = []
-
-for item in server_dict.values():
-    server = Pyro4.Proxy(item)
-    server_list.append(server)
-
-print(server_list)
 
 @Pyro4.expose
 class NameServer:
@@ -22,6 +13,15 @@ class NameServer:
 
     #chooses the first available online server, returns a list [0] = Server number [1] = server
     def choose_server(self, curr_server):
+        num_servers = len(server_dict.keys())
+
+        servers = server_dict.values()
+        server_list = []
+
+        for item in server_dict.values():
+            server = Pyro4.Proxy(item)
+            server_list.append(server)
+
         for i in range(curr_server, len(server_list)):
             #print(server_list[i].get_status())
             if server_list[i].get_status() == 'online':
@@ -47,7 +47,7 @@ class NameServer:
         if chosen_server == 1:
             return "No current server available"
         server = chosen_server[0]
-        response = server.new_query(self.timestamp_vector, movie_name)
+        response = server.new_query(self.fe_timestamp_vector, movie_name)
         print("Average Response: " + str(response))
         return response
         """
