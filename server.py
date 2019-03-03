@@ -86,15 +86,16 @@ class Database:
 
 
     def new_query(self, timestamp, movie_name):
+        print(timestamp)
         greatest_time = Database.compare_timestamp(timestamp)
         if greatest_time <= Database.value_timestamp[this_server_num]:
             return Database.average_rating(movie_name)
         return 0
 
 
-    def compare_timestamp(self, timestamps):
+    def compare_timestamp(self, timestamp):
         num = 0
-        for item in timestamps:
+        for item in timestamp:
             if item > num:
                 num = item
         return num
