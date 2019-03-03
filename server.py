@@ -105,30 +105,32 @@ class Database:
                 num = item
         return num
 
+    def gossip():
+        print("Gossiping shit")
+        Database.update_list = sorted(Database.update_list, key=sort_tuple)
+        print(Database.update_list)
+        for item in Database.update_list:
+            if item[0][this_server_num] == Database.value_timestamp[this_server_num] + 1:
+                Database.add_rating(item[2], item[3], item[4])
+                Database.all_updates.append((item[0], item[1], item[2], item[3], item[4]))
+                Database.value_timestamp[this_server_num] += 1
+                print("Gossiping new shit")
+
+        for item in Database.hold_back_queue:
+            # TODO - maybe not need this?
+            pass
+
+        for item in Database.update_list:
+            for other_server in server_list:
+                other_server.new_update(item[0], item[1], item[2], item[3], item[4])
+
+        # print("Should be different + " + str(Database.average_rating("Horns")))
+        print("Returning from Gossip")
+        return True
+
 def sort_tuple(item):
+    print("Sorting Tuple")
     return item[0][this_server_num]
-
-
-def gossip():
-    Database.update_list = sorted(Database.update_list, key=sort_tuple)
-    for item in Database.update_list:
-        if item[0][this_server_num] == Database.value_timestamp[this_server_num] + 1:
-            Database.add_rating(item[2], item[3], item[4])
-            Database.all_updates.append((item[0], item[1], item[2], item[3], item[4]))
-            Database.value_timestamp[this_server_num] += 1
-            print("Gossiping new shit")
-
-    for item in Database.hold_back_queue:
-        #TODO - maybe not need this?
-        pass
-
-    for item in Database.update_list:
-        for other_server in server_list:
-            other_server.new_update(item[0], item[1], item[2], item[3], item[4])
-
-    #print("Should be different + " + str(Database.average_rating("Horns")))
-    return True
-
 
 with Pyro4.locateNS() as name_server:
     server_dict = name_server.list(prefix="ratings.database.")
@@ -152,18 +154,18 @@ for item in server_dict.values():
 timestamp_table = [[] for _ in range(num_servers)]
 
 
-
-
 with Pyro4.locateNS() as name_server:
     name_server.register("ratings.database." + str(num_servers + 1), uri, safe=True)
+
+
 
 print("Server Ready: Object URI = " + str(num_servers + 1))
 
 sys.excepthook = Pyro4.util.excepthook
-daemon.requestLoop(gossip)
+daemon.requestLoop(Database.gossip)
 
 
-
+print("Loop Stopped")
 
 
 """
