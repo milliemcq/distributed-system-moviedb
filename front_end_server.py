@@ -17,7 +17,7 @@ print(server_list)
 
 @Pyro4.expose
 class NameServer:
-    timestamp_vector = []
+    timestamp_vector = [0, 0, 0]
     print("Looking in Name server")
 
     #chooses the first available online server, returns a list [0] = Server number [1] = server
@@ -48,10 +48,13 @@ class NameServer:
             return "No current server available"
         server = chosen_server[0]
         response = server.new_query(self.timestamp_vector, movie_name)
+        print("Average Response: " + str(response))
+        return response
+        """
         while response == 0:
             new_server = self.choose_server(server[1])
             response = new_server.new_query(self.timestamp_vector, movie_name)
-        return response
+        return response"""
 
 
 

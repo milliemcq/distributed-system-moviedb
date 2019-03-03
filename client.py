@@ -1,11 +1,12 @@
 import Pyro4
 
 
-
+#Get the user ID and return as lowercase
 user_id = input("Please enter your user ID: ")
 while user_id == "":
     print("Cannot input empty string")
     user_id = input("Please enter your user ID: ")
+
 user_id = user_id.lower()
 
 
@@ -14,14 +15,10 @@ with Pyro4.locateNS() as name_server:
     uri = name_server.lookup("frontEnd")
 
 front_end_server = Pyro4.Proxy(uri)
-try:
-    server = front_end_server.choose_server(0)
-except:
-    print("Couldn't find a server online")
 
-"""
-rating_horns = server.find_movie("Horns")
-print(rating_horns)"""
+
+
+
 
 #TODO - Figure out how to work with already_rated?? - Will need to check against timestamp (as with query)
 already_rated = False
@@ -72,7 +69,8 @@ def run_instruction(instruction, current_rating):
 
     #return the average rating for a given film in server
     elif instruction == "average":
-        print(front_end_server.average_rating(movie_name))
+        average_rating = str(str((front_end_server.average_rating(movie_name))))
+        print("Average rating for " + movie_name + " is: " + average_rating)
 
     #add a rating to a movie in the database
     elif instruction == "add":

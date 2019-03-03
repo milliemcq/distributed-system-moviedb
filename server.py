@@ -17,8 +17,8 @@ class Database:
     ratings = rating_dict
     update_list = []
     hold_back_queue = []
-    replica_timestamp = []
-    value_timestamp = []
+    replica_timestamp = [0, 0, 0]
+    value_timestamp = [0, 0, 0]
     all_updates = []
 
     timestamp_table = []
@@ -42,7 +42,8 @@ class Database:
             return "Could not find Movie with that title"
 
     def average_rating(self, movie_title):
-        if movie_title in rating_dict:
+        print("Inside average rating")
+        if movie_title in Database.ratings:
             total = 0
             number_ratings = 0
             for item in rating_dict[movie_title].keys():
@@ -87,14 +88,17 @@ class Database:
 
     def new_query(self, timestamp, movie_name):
         print(timestamp)
-        greatest_time = Database.compare_timestamp(timestamp)
+        print(movie_name)
+        greatest_time = Database.compare_timestamp(self, timestamp)
+        print(this_server_num)
         if greatest_time <= Database.value_timestamp[this_server_num]:
-            return Database.average_rating(movie_name)
+            return Database.average_rating(self, movie_name)
         return 0
 
 
     def compare_timestamp(self, timestamp):
         num = 0
+        print(timestamp)
         for item in timestamp:
             if item > num:
                 num = item
@@ -119,6 +123,8 @@ def gossip():
     for item in Database.update_list:
         for other_server in server_list:
             other_server.new_update(item[0], item[1], item[2], item[3], item[4])
+
+    return True
 
 
 with Pyro4.locateNS() as name_server:
@@ -151,7 +157,7 @@ with Pyro4.locateNS() as name_server:
 print("Server Ready: Object URI = " + str(num_servers + 1))
 
 sys.excepthook = Pyro4.util.excepthook
-daemon.requestLoop()
+daemon.requestLoop(gossip)
 
 
 
