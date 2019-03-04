@@ -73,7 +73,6 @@ class Database:
             for item in Database.all_updates:
                 if item[0] == timestamp:
                     return "Update already processed"
-            #TODO - UPDATING DATABASE NOT WORKING, NO RATING FUNC
             Database.update_list.append((timestamp, update_type, movie_name, user_id, rating))
             Database.replica_timestamp[this_server_num] += 1
             return Database.value_timestamp
@@ -113,7 +112,7 @@ class Database:
 
     def gossip():
         print(Database.update_list)
-        print("Gossiping shit")
+        print("Gossip Called")
         Database.update_list = sorted(Database.update_list, key=sort_tuple)
         print(Database.update_list)
         for item in Database.update_list:
@@ -125,15 +124,22 @@ class Database:
                 Database.all_updates.append((item[0], item[1], item[2], item[3], item[4]))
                 Database.value_timestamp[this_server_num] += 1
                 Database.update_list
-                print("Gossiping new shit")
+                print("New Gossip Update")
 
         for item in Database.hold_back_queue:
             # TODO - maybe not need this?
             pass
 
         for item in Database.update_list:
+            server_list = []
+            for item in server_dict.values():
+                if item != uri:
+                    server = Pyro4.Proxy(item)
+                    if server.get_status == "online":
+                        server_list.append(server)
             for other_server in server_list:
-                other_server.new_update(item[0], item[1], item[2], item[3], item[4])
+                print("Sending to other server")
+                other_server.new_update(item[0], item[1], item[2], item[3], item[4], True)
 
         # print("Should be different + " + str(Database.average_rating("Horns")))
         print("Returning from Gossip")
@@ -155,13 +161,7 @@ num_servers = len(server_dict.keys()) - 1
 
 this_server_num = num_servers + 1
 
-server_list = []
 
-for item in server_dict.values():
-    if item != uri:
-        server = Pyro4.Proxy(item)
-        if server.get_status == "online":
-            server_list.append(server)
 
 timestamp_table = [[] for _ in range(num_servers)]
 
