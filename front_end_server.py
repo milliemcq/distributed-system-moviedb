@@ -38,6 +38,8 @@ class NameServer:
         server = chosen_server[0]
         #TODO Return timestamp vector here and update 'global' timestamp
         replica_value_timestamp = server.new_update(self.fe_timestamp_vector, "update", movie_name, user_id, rating)
+        print(replica_value_timestamp)
+        self.fe_timestamp_vector = replica_value_timestamp
 
 
 

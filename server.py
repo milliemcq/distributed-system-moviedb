@@ -46,6 +46,7 @@ class Database:
         if movie_title in Database.ratings:
             total = 0
             number_ratings = 0
+            print(rating_dict[movie_title])
             for item in rating_dict[movie_title].keys():
                 total += rating_dict[movie_title][item]
                 number_ratings += 1
@@ -82,10 +83,12 @@ class Database:
                     return "Update already processed"
 
             Database.replica_timestamp[this_server_num] += 1
+            print("Timestamp Adding: " + str(Database.replica_timestamp))
             Database.update_list.append((Database.replica_timestamp, update_type, movie_name, user_id, rating))
 
 
-            print("Should be different + " + str(Database.average_rating(self, movie_name)))
+            #print("Should be different + " + str(Database.average_rating(self, movie_name)))
+            #Do we return the value_timestamp
             return Database.value_timestamp
 
 
@@ -113,7 +116,10 @@ class Database:
         print(Database.update_list)
         for item in Database.update_list:
             if item[0][this_server_num] == Database.value_timestamp[this_server_num] + 1:
-                Database.add_rating(item[2], item[3], item[4])
+                print(item[2])
+                print(item[3])
+                print(item[4])
+                Database.add_rating(0, item[2], item[3], item[4])
                 Database.all_updates.append((item[0], item[1], item[2], item[3], item[4]))
                 Database.value_timestamp[this_server_num] += 1
                 print("Gossiping new shit")
