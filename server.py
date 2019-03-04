@@ -83,12 +83,11 @@ class Database:
                     return "Update already processed"
 
             Database.replica_timestamp[this_server_num] += 1
-            print("Timestamp Adding: " + str(Database.replica_timestamp))
-            Database.update_list.append((Database.replica_timestamp, update_type, movie_name, user_id, rating))
+            timestamp[this_server_num] = Database.replica_timestamp[this_server_num]
 
+            print("Timestamp Adding: " + str(timestamp))
+            Database.update_list.append((timestamp, update_type, movie_name, user_id, rating))
 
-            #print("Should be different + " + str(Database.average_rating(self, movie_name)))
-            #Do we return the value_timestamp
             return Database.value_timestamp
 
 
@@ -110,7 +109,10 @@ class Database:
                 num = item
         return num
 
+
+
     def gossip():
+        print(Database.update_list)
         print("Gossiping shit")
         Database.update_list = sorted(Database.update_list, key=sort_tuple)
         print(Database.update_list)
@@ -122,6 +124,7 @@ class Database:
                 Database.add_rating(0, item[2], item[3], item[4])
                 Database.all_updates.append((item[0], item[1], item[2], item[3], item[4]))
                 Database.value_timestamp[this_server_num] += 1
+                Database.update_list
                 print("Gossiping new shit")
 
         for item in Database.hold_back_queue:
@@ -135,6 +138,7 @@ class Database:
         # print("Should be different + " + str(Database.average_rating("Horns")))
         print("Returning from Gossip")
         return True
+
 
 def sort_tuple(item):
     print("Sorting Tuple")
