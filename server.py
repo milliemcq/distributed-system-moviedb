@@ -123,23 +123,18 @@ class Database:
                 Database.add_rating(0, item[2], item[3], item[4])
                 Database.all_updates.append((item[0], item[1], item[2], item[3], item[4]))
                 Database.value_timestamp[this_server_num] += 1
-                Database.update_list
+
                 print("New Gossip Update")
 
-        for item in Database.hold_back_queue:
-            # TODO - maybe not need this?
-            pass
 
+        print("Updating other servers")
         for item in Database.update_list:
-            server_list = []
-            for item in server_dict.values():
-                if item != uri:
-                    server = Pyro4.Proxy(item)
-                    if server.get_status == "online":
-                        server_list.append(server)
+            print("Looping through update list")
+            server_list = get_server_list()
+            print(server_list)
             for other_server in server_list:
                 print("Sending to other server")
-                other_server.new_update(item[0], item[1], item[2], item[3], item[4], True)
+                other_timestamp = other_server.new_update(item[0], item[1], item[2], item[3], item[4], True)
 
         # print("Should be different + " + str(Database.average_rating("Horns")))
         print("Returning from Gossip")
@@ -149,6 +144,21 @@ class Database:
 def sort_tuple(item):
     print("Sorting Tuple")
     return item[0][this_server_num]
+
+def get_server_list():
+    server_dict = name_server.list(prefix="ratings.database.")
+    server_list = []
+    print(server_dict)
+    print(uri)
+    for item in server_dict.values():
+        if item != uri:
+            print("Adding server")
+            server = Pyro4.Proxy(item)
+            if server.get_status == "online":
+                server_list.append(server)
+    print("Server List = " + str(server_list))
+    return server_list
+
 
 with Pyro4.locateNS() as name_server:
     server_dict = name_server.list(prefix="ratings.database.")

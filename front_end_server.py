@@ -1,8 +1,7 @@
 import Pyro4
 import sys
 
-with Pyro4.locateNS() as name_server:
-    server_dict = name_server.list(prefix="ratings.database.")
+
 
 
 
@@ -13,6 +12,9 @@ class NameServer:
 
     #chooses the first available online server, returns a list [0] = Server number [1] = server
     def choose_server(self, curr_server):
+        with Pyro4.locateNS() as name_server:
+            server_dict = name_server.list(prefix="ratings.database.")
+
         num_servers = len(server_dict.keys())
 
         servers = server_dict.values()
