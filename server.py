@@ -24,11 +24,11 @@ class Database:
     all_updates = []
     executed_updates = []
 
-    timestamp_table = [[],[]]
+    timestamp_table = [[], []]
 
     def get_status(self):
         if len(Database.update_list) > 10:
-            print("Making Overloaded")
+            print("Returning Overloaded")
             return "overloaded"
         num = random.uniform(0, 1)
         if num < 0.9:
@@ -67,7 +67,7 @@ class Database:
     def get_rating_dict(self):
         return rating_dict
 
-    def new_update(self, timestamp, update_id, movie_name, user_id, rating, gossip, server=None):
+    def new_update(self, timestamp, update_id, movie_name, user_id, rating, gossip, server):
         print("Average rating within new_update: " + str(Database.average_rating(self, movie_name)))
         #print(Database.timestamp_table)
         if gossip:
@@ -76,19 +76,25 @@ class Database:
             print("server num: " + str(server))
             #Add processed update to timestamp table - if every server has seen update, delete from update_list
             Database.timestamp_table[server].append(timestamp)
-            found = True
+            found = 0
             for used_timestamp_list in Database.timestamp_table:
                 if timestamp in used_timestamp_list:
+                    print("FOUND!")
                     continue
+                print("Making found False")
                 found = False
 
-            if item in Database.executed_updates:
-                    if found:
-                        #find timestamp and remove on index
-                        for i in range(len(Database.update_list)):
-                            if Database.update_list[i][1] == update_id:
-                                del Database.update_list[i]
-                        return "Update already processed"
+
+            if found:
+                #find timestamp and remove on index
+                for i in range(len(Database.update_list)):
+                    if Database.update_list[i][1] == update_id:
+                        print("Should be more: " + str(Database.update_list))
+                        del Database.update_list[i]
+                        print("Should be less: " + str(Database.update_list))
+                print("NO LONGER ADDING UPDATE")
+                return "Update already processed"
+
 
             Database.replica_timestamp[this_server_num] += 1
             #timestamp[this_server_num] = Database.replica_timestamp[this_server_num]
@@ -135,14 +141,15 @@ class Database:
         Database.update_list = sorted(Database.update_list, key=sort_tuple)
         print(Database.update_list)
         for item in Database.update_list:
-            if item[0][this_server_num] == Database.value_timestamp[this_server_num] + 1:
+            if item[1] not in Database.executed_updates:
+            #if item[0][this_server_num] == Database.value_timestamp[this_server_num] + 1:
                 Database.add_rating(0, item[2], item[3], item[4])
-                Database.executed_updates.append(item[0])
+                Database.executed_updates.append(item[1])
                 Database.all_updates.append((item[0], item[1], item[2], item[3], item[4]))
                 Database.timestamp_table[this_server_num].append(item[0])
                 Database.value_timestamp[this_server_num] += 1
 
-                print("New Gossip Update")
+        print("New Gossip Update")
 
 
 
@@ -168,13 +175,13 @@ def get_server_list():
     server_dict = name_server.list(prefix="ratings.database.")
     server_list = []
     for item in server_dict.values():
-        print(server_dict.values())
+        #print(server_dict.values())
         if item != uri:
             server = Pyro4.Proxy(item)
             if server.get_status() == "online":
                 #print("Adding server")
                 server_list.append(server)
-    print("Server List = " + str(server_list))
+    #print("Server List = " + str(server_list))
     return server_list
 
 
