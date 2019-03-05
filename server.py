@@ -74,6 +74,7 @@ class Database:
 
             print("Timestamp table, within gossip new_update: " + str(Database.timestamp_table))
             print("server num: " + str(server))
+            print("Timestamp: " + str(timestamp))
             #Add processed update to timestamp table - if every server has seen update, delete from update_list
             Database.timestamp_table[server].append(timestamp)
             found = 0
@@ -98,6 +99,7 @@ class Database:
 
             Database.replica_timestamp[this_server_num] += 1
             #timestamp[this_server_num] = Database.replica_timestamp[this_server_num]
+            print("APPENDING BECAUSE GOSSIP SAYS SO")
             Database.update_list.append((timestamp, update_id, movie_name, user_id, rating))
 
             return timestamp
@@ -110,6 +112,7 @@ class Database:
             timestamp[this_server_num] = Database.replica_timestamp[this_server_num]
 
             print("Timestamp Adding: " + str(timestamp))
+            print("APPENDING BECAUSE FRONT END SAYS SO")
             Database.update_list.append((timestamp, update_id, movie_name, user_id, rating))
             #Database.gossip()
             return timestamp
@@ -159,6 +162,7 @@ class Database:
             print(server_list)
             for other_server in server_list:
                 print("Sending to other server")
+                print("this server num: " + str(this_server_num))
                 other_timestamp = other_server.new_update(item[0], item[1], item[2], item[3], item[4], True, this_server_num)
 
         # print("Should be different + " + str(Database.average_rating("Horns")))
@@ -175,8 +179,7 @@ def get_server_list():
     server_dict = name_server.list(prefix="ratings.database.")
     server_list = []
     for item in server_dict.values():
-        #print(server_dict.values())
-        if item != uri:
+        if str(item) != str(uri):
             server = Pyro4.Proxy(item)
             if server.get_status() == "online":
                 #print("Adding server")
