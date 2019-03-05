@@ -1,6 +1,7 @@
 import Pyro4
 import read_update_csv as data
 import sys
+import random
 
 
 status = "online"
@@ -21,11 +22,15 @@ class Database:
     value_timestamp = [0, 0, 0]
     all_updates = []
 
-    timestamp_table = []
+    timestamp_table = [[],[],[]]
 
     def get_status(self):
-        #if len(Database.update_list)
-        return status
+        if len(Database.update_list) > 10:
+            return "overloaded"
+        num = random.uniform(0, 1)
+        if num < 0.9:
+            return "online"
+        return "offline"
 
     def add_rating(self, movie_title, user_id, rating):
         if movie_title in rating_dict:
@@ -58,12 +63,23 @@ class Database:
     def get_rating_dict(self):
         return rating_dict
 
-    def new_update(self, timestamp, update_type, movie_name, user_id, rating, gossip=False):
+    def new_update(self, timestamp, update_type, movie_name, user_id, rating, gossip=False, server=None):
         print(str(Database.average_rating(self, movie_name)))
         if gossip:
-            #timestamp_table.append(timestamp) - find out what server this is coming from ^^ pass form above
+
+
+            #Add processed update to timestamp table - if every server has seen update, delete from update_list
+            timestamp_table[server].append(timestamp)
+            found = True
+            for used_timestamp_list in timestamp_table:
+                if timestamp in used_timestamp_list:
+                    continue
+                found = False
+
             for item in Database.all_updates:
                 if item[0] == timestamp:
+                    if found:
+                        Database.update_list.remove(item)
                     return "Update already processed"
             Database.update_list.append((timestamp, update_type, movie_name, user_id, rating))
             Database.replica_timestamp[this_server_num] += 1
@@ -126,7 +142,7 @@ class Database:
             print(server_list)
             for other_server in server_list:
                 print("Sending to other server")
-                other_timestamp = other_server.new_update(item[0], item[1], item[2], item[3], item[4], True)
+                other_timestamp = other_server.new_update(item[0], item[1], item[2], item[3], item[4], True, this_server_num)
 
         # print("Should be different + " + str(Database.average_rating("Horns")))
         print("Returning from Gossip")
@@ -140,13 +156,14 @@ def sort_tuple(item):
 def get_server_list():
     server_dict = name_server.list(prefix="ratings.database.")
     server_list = []
-    print(server_dict)
-    print(uri)
     for item in server_dict.values():
         if item != uri:
-            print("Adding server")
+            print("Server found not this one")
+
             server = Pyro4.Proxy(item)
-            if server.get_status == "online":
+            print(server.get_status())
+            if server.get_status() == "online":
+                print("Adding server")
                 server_list.append(server)
     print("Server List = " + str(server_list))
     return server_list
