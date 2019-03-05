@@ -16,15 +16,7 @@ with Pyro4.locateNS() as name_server:
 
 front_end_server = Pyro4.Proxy(uri)
 
-
-
-
-
-#TODO - Figure out how to work with already_rated?? - Will need to check against timestamp (as with query)
-already_rated = False
-current_rating = None
-
-#TODO - Get already rated?
+print("Welcome to the Gossip Architecture movie rating system!")
 
 
 def run_instruction(instruction, current_rating):
