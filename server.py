@@ -22,6 +22,7 @@ class Database:
     replica_timestamp = [0, 0, 0]
     value_timestamp = [0, 0, 0]
     all_updates = []
+    executed_updates = []
 
     timestamp_table = [[],[]]
 
@@ -66,7 +67,7 @@ class Database:
     def get_rating_dict(self):
         return rating_dict
 
-    def new_update(self, timestamp, update_type, movie_name, user_id, rating, gossip=False, server=None):
+    def new_update(self, timestamp, update_id, movie_name, user_id, rating, gossip=False, server=None):
         print("Average rating within new_update: " + str(Database.average_rating(self, movie_name)))
         #print(Database.timestamp_table)
         if gossip:
@@ -81,30 +82,29 @@ class Database:
                     continue
                 found = False
 
-            for item in Database.all_updates:
-                if item[0] == timestamp:
+            if item in Database.executed_updates:
                     if found:
                         #find timestamp and remove on index
                         for i in range(len(Database.update_list)):
-                            if Database.update_list[i][0] == timestamp:
+                            if Database.update_list[i][1] == update_id:
                                 del Database.update_list[i]
                         return "Update already processed"
 
             Database.replica_timestamp[this_server_num] += 1
             #timestamp[this_server_num] = Database.replica_timestamp[this_server_num]
-            Database.update_list.append((timestamp, update_type, movie_name, user_id, rating))
+            Database.update_list.append((timestamp, update_id, movie_name, user_id, rating))
 
             return timestamp
         else:
-            for item in Database.all_updates:
-                if item[0] == timestamp:
-                    return timestamp
+
+            if update_id in Database.executed_updates:
+                return timestamp
 
             Database.replica_timestamp[this_server_num] += 1
             timestamp[this_server_num] = Database.replica_timestamp[this_server_num]
 
             print("Timestamp Adding: " + str(timestamp))
-            Database.update_list.append((timestamp, update_type, movie_name, user_id, rating))
+            Database.update_list.append((timestamp, update_id, movie_name, user_id, rating))
             #Database.gossip()
             return timestamp
 
@@ -138,6 +138,7 @@ class Database:
         for item in Database.update_list:
             if item[0][this_server_num] == Database.value_timestamp[this_server_num] + 1:
                 Database.add_rating(0, item[2], item[3], item[4])
+                Database.executed_updates.append(item[0])
                 Database.all_updates.append((item[0], item[1], item[2], item[3], item[4]))
                 Database.timestamp_table[this_server_num].append(item[0])
                 Database.value_timestamp[this_server_num] += 1
