@@ -91,7 +91,7 @@ class Database:
                         return "Update already processed"
 
             Database.replica_timestamp[this_server_num] += 1
-            timestamp[this_server_num] = Database.replica_timestamp[this_server_num]
+            #timestamp[this_server_num] = Database.replica_timestamp[this_server_num]
             Database.update_list.append((timestamp, update_type, movie_name, user_id, rating))
 
             return timestamp
@@ -169,13 +169,13 @@ def get_server_list():
     server_list = []
     for item in server_dict.values():
         if item != uri:
-            print("Server found not this one")
+            #print("Server found not this one")
 
             server = Pyro4.Proxy(item)
-            print(server.get_status())
+            #print(server.get_status())
             if server.get_status() == "online":
                 print("Adding server")
-                server_list.append(server)
+                #server_list.append(server)
     print("Server List = " + str(server_list))
     return server_list
 
