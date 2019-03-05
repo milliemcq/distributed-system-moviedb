@@ -67,10 +67,11 @@ class Database:
         return rating_dict
 
     def new_update(self, timestamp, update_type, movie_name, user_id, rating, gossip=False, server=None):
-        print(str(Database.average_rating(self, movie_name)))
-        print(Database.timestamp_table)
+        print("Average rating within new_update: " + str(Database.average_rating(self, movie_name)))
+        #print(Database.timestamp_table)
         if gossip:
 
+            print("Timestamp table, within gossip new_update: " + str(Database.timestamp_table))
             print("server num: " + str(server))
             #Add processed update to timestamp table - if every server has seen update, delete from update_list
             Database.timestamp_table[server].append(timestamp)
@@ -89,14 +90,15 @@ class Database:
                                 del Database.update_list[i]
                         return "Update already processed"
 
-            Database.update_list.append((timestamp, update_type, movie_name, user_id, rating))
             Database.replica_timestamp[this_server_num] += 1
-            #Database.gossip()
-            return Database.value_timestamp
+            timestamp[this_server_num] = Database.replica_timestamp[this_server_num]
+            Database.update_list.append((timestamp, update_type, movie_name, user_id, rating))
+
+            return timestamp
         else:
             for item in Database.all_updates:
                 if item[0] == timestamp:
-                    return "Update already processed"
+                    return timestamp
 
             Database.replica_timestamp[this_server_num] += 1
             timestamp[this_server_num] = Database.replica_timestamp[this_server_num]
@@ -128,7 +130,7 @@ class Database:
 
     @staticmethod
     def gossip():
-        threading.Timer(5, Database.gossip).start()
+
         print(Database.update_list)
         print("Gossip Called")
         Database.update_list = sorted(Database.update_list, key=sort_tuple)
@@ -153,12 +155,13 @@ class Database:
                 other_timestamp = other_server.new_update(item[0], item[1], item[2], item[3], item[4], True, this_server_num)
 
         # print("Should be different + " + str(Database.average_rating("Horns")))
+        threading.Timer(5, Database.gossip).start()
         print("Returning from Gossip")
 
 
 
 def sort_tuple(item):
-    print("Sorting Tuple")
+    #print("Sorting Tuple")
     return item[0][this_server_num]
 
 def get_server_list():
