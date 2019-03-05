@@ -67,7 +67,7 @@ class Database:
     def get_rating_dict(self):
         return rating_dict
 
-    def new_update(self, timestamp, update_id, movie_name, user_id, rating, gossip=False, server=None):
+    def new_update(self, timestamp, update_id, movie_name, user_id, rating, gossip, server=None):
         print("Average rating within new_update: " + str(Database.average_rating(self, movie_name)))
         #print(Database.timestamp_table)
         if gossip:
@@ -130,7 +130,6 @@ class Database:
 
     @staticmethod
     def gossip():
-
         print(Database.update_list)
         print("Gossip Called")
         Database.update_list = sorted(Database.update_list, key=sort_tuple)
@@ -146,9 +145,9 @@ class Database:
                 print("New Gossip Update")
 
 
-        print("Updating other servers")
+
         for item in Database.update_list:
-            print("Looping through update list")
+            #print("Looping through update list")
             server_list = get_server_list()
             print(server_list)
             for other_server in server_list:
@@ -169,14 +168,12 @@ def get_server_list():
     server_dict = name_server.list(prefix="ratings.database.")
     server_list = []
     for item in server_dict.values():
+        print(server_dict.values())
         if item != uri:
-            #print("Server found not this one")
-
             server = Pyro4.Proxy(item)
-            #print(server.get_status())
             if server.get_status() == "online":
-                print("Adding server")
-                #server_list.append(server)
+                #print("Adding server")
+                server_list.append(server)
     print("Server List = " + str(server_list))
     return server_list
 

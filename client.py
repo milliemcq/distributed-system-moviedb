@@ -19,25 +19,9 @@ front_end_server = Pyro4.Proxy(uri)
 print("Welcome to the Gossip Architecture movie rating system!")
 
 
-def run_instruction(instruction, current_rating):
-
-    #update a users rating in server database
-    if instruction == "update":
-        print("Current rating is currently" + str(current_rating))
-        while True:
-            try:
-                user_rating = float(input('Please enter an updating rating for the movie ' + movie_name
-                                          + ', your current rating is ' + str(current_rating) + ': '))
-                if user_rating < 0 or user_rating > 10:
-                    raise ValueError
-                break
-            except ValueError:
-                print("Invalid rating. The rating must be in the range 0-10.")
-
-        front_end_server.add_movie_rating(movie_name, user_id, user_rating)
-
+def run_instruction(instruction):
     #return the average rating for a given film in server
-    elif instruction == "average":
+    if instruction == "average":
         average_rating = str(str((front_end_server.average_rating(movie_name))))
         print("Average rating for " + movie_name + " is: " + average_rating)
 
@@ -72,7 +56,7 @@ while instruction != "quit":
             "Would you like to update your rating (update) or view the average rating for this movie? (average)? ")
         instruction = instruction.lower()
 
-    run_instruction(instruction, current_rating)
+    run_instruction(instruction)
 
 
 
