@@ -2,6 +2,7 @@ import Pyro4
 import read_update_csv as data
 import sys
 import random
+import threading
 
 
 status = "online"
@@ -22,14 +23,16 @@ class Database:
     value_timestamp = [0, 0, 0]
     all_updates = []
 
-    timestamp_table = [[],[],[]]
+    timestamp_table = [[],[]]
 
     def get_status(self):
         if len(Database.update_list) > 10:
+            print("Making Overloaded")
             return "overloaded"
         num = random.uniform(0, 1)
         if num < 0.9:
             return "online"
+        print("Returning Offline")
         return "offline"
 
     def add_rating(self, movie_title, user_id, rating):
@@ -65,13 +68,14 @@ class Database:
 
     def new_update(self, timestamp, update_type, movie_name, user_id, rating, gossip=False, server=None):
         print(str(Database.average_rating(self, movie_name)))
+        print(Database.timestamp_table)
         if gossip:
 
-
+            print("server num: " + str(server))
             #Add processed update to timestamp table - if every server has seen update, delete from update_list
-            timestamp_table[server].append(timestamp)
+            Database.timestamp_table[server].append(timestamp)
             found = True
-            for used_timestamp_list in timestamp_table:
+            for used_timestamp_list in Database.timestamp_table:
                 if timestamp in used_timestamp_list:
                     continue
                 found = False
@@ -79,10 +83,15 @@ class Database:
             for item in Database.all_updates:
                 if item[0] == timestamp:
                     if found:
-                        Database.update_list.remove(item)
-                    return "Update already processed"
+                        #find timestamp and remove on index
+                        for i in range(len(Database.update_list)):
+                            if Database.update_list[i][0] == timestamp:
+                                del Database.update_list[i]
+                        return "Update already processed"
+
             Database.update_list.append((timestamp, update_type, movie_name, user_id, rating))
             Database.replica_timestamp[this_server_num] += 1
+            #Database.gossip()
             return Database.value_timestamp
         else:
             for item in Database.all_updates:
@@ -94,8 +103,8 @@ class Database:
 
             print("Timestamp Adding: " + str(timestamp))
             Database.update_list.append((timestamp, update_type, movie_name, user_id, rating))
-            Database.gossip()
-            return Database.value_timestamp
+            #Database.gossip()
+            return timestamp
 
 
     def new_query(self, timestamp, movie_name):
@@ -117,19 +126,18 @@ class Database:
         return num
 
 
-
+    @staticmethod
     def gossip():
+        threading.Timer(5, Database.gossip).start()
         print(Database.update_list)
         print("Gossip Called")
         Database.update_list = sorted(Database.update_list, key=sort_tuple)
         print(Database.update_list)
         for item in Database.update_list:
             if item[0][this_server_num] == Database.value_timestamp[this_server_num] + 1:
-                print(item[2])
-                print(item[3])
-                print(item[4])
                 Database.add_rating(0, item[2], item[3], item[4])
                 Database.all_updates.append((item[0], item[1], item[2], item[3], item[4]))
+                Database.timestamp_table[this_server_num].append(item[0])
                 Database.value_timestamp[this_server_num] += 1
 
                 print("New Gossip Update")
@@ -193,6 +201,10 @@ with Pyro4.locateNS() as name_server:
 print("Server Ready: Object URI = " + str(num_servers + 1))
 
 sys.excepthook = Pyro4.util.excepthook
+
+
+
+threading.Timer(5, Database.gossip).start()
 daemon.requestLoop()
 
 
