@@ -23,16 +23,8 @@ class Database:
 
     timestamp_table = []
 
-    def go_offline(self):
-        Database.status = "offline"
-
-    def overload(self):
-        Database.status = "overload"
-
-    def online(self):
-        Database.status = "online"
-
     def get_status(self):
+        #if len(Database.update_list)
         return status
 
     def add_rating(self, movie_title, user_id, rating):
@@ -86,7 +78,7 @@ class Database:
 
             print("Timestamp Adding: " + str(timestamp))
             Database.update_list.append((timestamp, update_type, movie_name, user_id, rating))
-
+            Database.gossip()
             return Database.value_timestamp
 
 
@@ -138,7 +130,7 @@ class Database:
 
         # print("Should be different + " + str(Database.average_rating("Horns")))
         print("Returning from Gossip")
-        return True
+
 
 
 def sort_tuple(item):
@@ -184,7 +176,7 @@ with Pyro4.locateNS() as name_server:
 print("Server Ready: Object URI = " + str(num_servers + 1))
 
 sys.excepthook = Pyro4.util.excepthook
-daemon.requestLoop(Database.gossip)
+daemon.requestLoop()
 
 
 print("Loop Stopped")
