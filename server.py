@@ -77,7 +77,7 @@ class Database:
             print("Timestamp: " + str(timestamp))
             #Add processed update to timestamp table - if every server has seen update, delete from update_list
             Database.timestamp_table[server].append(timestamp)
-            found = 0
+            found = True
             for used_timestamp_list in Database.timestamp_table:
                 if timestamp in used_timestamp_list:
                     print("FOUND!")
