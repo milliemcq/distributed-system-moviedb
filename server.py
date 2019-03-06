@@ -43,7 +43,7 @@ class Database:
             return "Could not find Movie with that title"
 
     def average_rating(self, movie_title):
-        print("Inside average rating")
+        #print("Inside average rating")
         if movie_title in Database.ratings:
             total = 0
             number_ratings = 0
@@ -92,7 +92,7 @@ class Database:
 
             return timestamp
         else:
-
+            print("ADDING IT TO THIS SERVER")
             if update_id in Database.executed_updates:
                 return timestamp
 
@@ -111,9 +111,9 @@ class Database:
         found = True
         for used_timestamp_list in Database.timestamp_table:
             if timestamp in used_timestamp_list:
-                print("FOUND!")
+                #print("FOUND!")
                 continue
-            print("Making found False")
+            #print("Making found False")
             found = False
 
         print(found)
@@ -136,7 +136,7 @@ class Database:
         print(this_server_num)
         if greatest_time <= Database.value_timestamp[this_server_num]:
             return Database.average_rating(self, movie_name)
-        return 0
+        return "No up to date server found"
 
 
     def compare_timestamp(self, timestamp):
@@ -152,6 +152,9 @@ class Database:
     def gossip():
         print(Database.update_list)
         print("Gossip Called")
+
+        for item in Database.update_list:
+            Database.check_timestamp_table(0, item[0], item[1])
         Database.update_list = sorted(Database.update_list, key=sort_tuple)
         print(Database.update_list)
         for item in Database.update_list:

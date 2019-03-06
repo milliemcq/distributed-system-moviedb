@@ -4,7 +4,7 @@ import sys
 
 
 
-
+@Pyro4.behavior(instance_mode = "single")
 @Pyro4.expose
 class NameServer:
     fe_timestamp_vector = [0, 0, 0]

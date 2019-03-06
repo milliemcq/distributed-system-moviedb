@@ -1,6 +1,10 @@
 import Pyro4
 
 
+
+
+print("Welcome to the Gossip Architecture movie rating system!")
+
 #Get the user ID and return as lowercase
 user_id = input("Please enter your user ID: ")
 while user_id == "":
@@ -15,8 +19,6 @@ with Pyro4.locateNS() as name_server:
     uri = name_server.lookup("frontEnd")
 
 front_end_server = Pyro4.Proxy(uri)
-
-print("Welcome to the Gossip Architecture movie rating system!")
 
 
 def run_instruction(instruction):
