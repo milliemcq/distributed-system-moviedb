@@ -107,6 +107,7 @@ class Database:
 
 
     def check_timestamp_table(self, timestamp, update_id):
+        print("Update id: " + str(update_id))
         found = True
         for used_timestamp_list in Database.timestamp_table:
             if timestamp in used_timestamp_list:
@@ -115,15 +116,17 @@ class Database:
             print("Making found False")
             found = False
 
+        print(found)
         if found:
+            print(Database.update_list)
             # find timestamp and remove on index
             for i in range(len(Database.update_list)):
                 if Database.update_list[i][1] == update_id:
                     print("Should be more: " + str(Database.update_list))
                     del Database.update_list[i]
                     print("Should be less: " + str(Database.update_list))
-                    return True
-        return False
+                    return found
+        return found
 
 
     def new_query(self, timestamp, movie_name):
@@ -157,16 +160,16 @@ class Database:
                 Database.add_rating(0, item[2], item[3], item[4])
                 Database.executed_updates.append(item[1])
                 Database.all_updates.append((item[0], item[1], item[2], item[3], item[4]))
+                print(Database.timestamp_table)
                 Database.timestamp_table[this_server_num].append(item[0])
-                Database.check_timestamp_table(0, item[0], item[1])
+                #Database.check_timestamp_table(0, item[0], item[1])
+                print(Database.timestamp_table)
                 Database.value_timestamp[this_server_num] += 1
 
         print("New Gossip Update")
 
 
-
         for item in Database.update_list:
-
             server_list = get_server_list()
             print(server_list)
             for other_server in server_list:
@@ -174,6 +177,8 @@ class Database:
                 print("this server num: " + str(this_server_num))
                 other_timestamp = other_server.new_update(item[0], item[1], item[2], item[3], item[4], True, this_server_num)
 
+        for item in Database.update_list:
+            Database.check_timestamp_table(0, item[0], item[1])
         # print("Should be different + " + str(Database.average_rating("Horns")))
         threading.Timer(5, Database.gossip).start()
         print("Returning from Gossip")
