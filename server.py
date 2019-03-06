@@ -68,46 +68,50 @@ class Database:
         return rating_dict
 
     def new_update(self, timestamp, update_id, movie_name, user_id, rating, gossip, server):
-        print("Average rating within new_update: " + str(Database.average_rating(self, movie_name)))
+        print("RATING DICT FOR MOVIE CURRENTLY = ")
+        Database.average_rating(self, movie_name)
         #print(Database.timestamp_table)
         if gossip:
-
+            print("Recieved gossip for timestamp: " + str(timestamp) + " from server " + str(server))
             print("Timestamp table, within gossip new_update: " + str(Database.timestamp_table))
-            print("server num: " + str(server))
-            print("Timestamp: " + str(timestamp))
+            print("server num recieved from: " + str(server))
+            print("Timestamp recieved: " + str(timestamp))
             #Add processed update to timestamp table - if every server has seen update, delete from update_list
             if timestamp not in Database.timestamp_table[server]:
                 Database.timestamp_table[server].append(timestamp)
 
 
             if Database.check_timestamp_table(self, timestamp, update_id):
-                print("Update already processed within gossip")
+                #print("Update already processed within gossip")
                 return "Update already processed"
 
             if update_id not in Database.executed_updates:
                 Database.replica_timestamp[this_server_num] += 1
                 #timestamp[this_server_num] = Database.replica_timestamp[this_server_num]
-                print("APPENDING BECAUSE GOSSIP SAYS SO")
+                print("Timestamp table - should not show this update for this server!!" + str(Database.timestamp_table))
+                print("APPENDING BECAUSE GOSSIP SAYS TO")
                 Database.update_list.append((timestamp, update_id, movie_name, user_id, rating))
 
             return timestamp
         else:
-            print("ADDING IT TO THIS SERVER")
+
             if update_id in Database.executed_updates:
                 return timestamp
+
+
 
             Database.replica_timestamp[this_server_num] += 1
             timestamp[this_server_num] = Database.replica_timestamp[this_server_num]
 
+            print("Making a new update at timestamp %s for movie name %s", timestamp, movie_name)
             print("Timestamp Adding: " + str(timestamp))
             print("APPENDING BECAUSE FRONT END SAYS SO")
             Database.update_list.append((timestamp, update_id, movie_name, user_id, rating))
-            #Database.gossip()
             return timestamp
 
 
     def check_timestamp_table(self, timestamp, update_id):
-        print("Update id: " + str(update_id))
+        #print("Update id: " + str(update_id))
         found = True
         for used_timestamp_list in Database.timestamp_table:
             if timestamp in used_timestamp_list:
@@ -118,20 +122,20 @@ class Database:
 
         print(found)
         if found:
-            print(Database.update_list)
+            #print(Database.update_list)
             # find timestamp and remove on index
             for i in range(len(Database.update_list)):
                 if Database.update_list[i][1] == update_id:
                     print("Should be more: " + str(Database.update_list))
                     del Database.update_list[i]
                     print("Should be less: " + str(Database.update_list))
-                    return found
+
+
         return found
 
 
     def new_query(self, timestamp, movie_name):
-        print(timestamp)
-        print(movie_name)
+        print("Making a new query at timestamp %s for movie name %s", timestamp, movie_name)
         greatest_time = Database.compare_timestamp(self, timestamp)
         print(this_server_num)
         if greatest_time <= Database.value_timestamp[this_server_num]:
@@ -150,41 +154,46 @@ class Database:
 
     @staticmethod
     def gossip():
-        print(Database.update_list)
-        print("Gossip Called")
+        print("SERVER %s GOSSIPING", this_server_num)
+        print("Update list before gossip: " + str(Database.update_list))
 
         for item in Database.update_list:
             Database.check_timestamp_table(0, item[0], item[1])
+
+        print("Timestamp Table inside Gossip: ", Database.timestamp_table)
         Database.update_list = sorted(Database.update_list, key=sort_tuple)
-        print(Database.update_list)
+        #print(Database.update_list)
         for item in Database.update_list:
             if item[1] not in Database.executed_updates:
             #if item[0][this_server_num] == Database.value_timestamp[this_server_num] + 1:
                 Database.add_rating(0, item[2], item[3], item[4])
                 Database.executed_updates.append(item[1])
                 Database.all_updates.append((item[0], item[1], item[2], item[3], item[4]))
-                print(Database.timestamp_table)
+                #print(Database.timestamp_table)
                 Database.timestamp_table[this_server_num].append(item[0])
                 #Database.check_timestamp_table(0, item[0], item[1])
-                print(Database.timestamp_table)
                 Database.value_timestamp[this_server_num] += 1
+                print("Timestamp table within gossip processing updates: " + str(Database.timestamp_table))
+                print("Update list shouldn't include anything in all timestamp table: " + str(Database.update_list))
+
 
         print("New Gossip Update")
 
 
         for item in Database.update_list:
             server_list = get_server_list()
-            print(server_list)
+            #print(server_list)
             for other_server in server_list:
-                print("Sending to other server")
-                print("this server num: " + str(this_server_num))
+                #print("Sending to other server")
+                #print("this server num: " + str(this_server_num))
+                print("Sending update to other server - sending update to other server")
                 other_timestamp = other_server.new_update(item[0], item[1], item[2], item[3], item[4], True, this_server_num)
 
         for item in Database.update_list:
             Database.check_timestamp_table(0, item[0], item[1])
         # print("Should be different + " + str(Database.average_rating("Horns")))
         threading.Timer(5, Database.gossip).start()
-        print("Returning from Gossip")
+        print("GOSSIP FINISHED")
 
 
 
