@@ -18,11 +18,12 @@ timestamp_vector = []
 class Database:
     ratings = rating_dict
     update_list = []
-    hold_back_queue = []
+    not_sent_queue = [[], [], []]
     replica_timestamp = [0, 0, 0]
     value_timestamp = [0, 0, 0]
     all_updates = []
     executed_updates = []
+
 
     timestamp_table = [[], [], []]
 
@@ -191,6 +192,9 @@ class Database:
 
 
         print("New Gossip Update")
+
+
+
 
 
         for item in Database.update_list:
