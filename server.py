@@ -76,24 +76,12 @@ class Database:
             print("server num: " + str(server))
             print("Timestamp: " + str(timestamp))
             #Add processed update to timestamp table - if every server has seen update, delete from update_list
-            Database.timestamp_table[server].append(timestamp)
-            found = True
-            for used_timestamp_list in Database.timestamp_table:
-                if timestamp in used_timestamp_list:
-                    print("FOUND!")
-                    continue
-                print("Making found False")
-                found = False
+            if timestamp not in Database.timestamp_table[server]:
+                Database.timestamp_table[server].append(timestamp)
 
 
-            if found:
-                #find timestamp and remove on index
-                for i in range(len(Database.update_list)):
-                    if Database.update_list[i][1] == update_id:
-                        print("Should be more: " + str(Database.update_list))
-                        del Database.update_list[i]
-                        print("Should be less: " + str(Database.update_list))
-                print("NO LONGER ADDING UPDATE")
+            if Database.check_timestamp_table(self, timestamp, update_id):
+                print("Update already processed within gossip")
                 return "Update already processed"
 
 
@@ -116,6 +104,26 @@ class Database:
             Database.update_list.append((timestamp, update_id, movie_name, user_id, rating))
             #Database.gossip()
             return timestamp
+
+
+    def check_timestamp_table(self, timestamp, update_id):
+        found = True
+        for used_timestamp_list in Database.timestamp_table:
+            if timestamp in used_timestamp_list:
+                print("FOUND!")
+                continue
+            print("Making found False")
+            found = False
+
+        if found:
+            # find timestamp and remove on index
+            for i in range(len(Database.update_list)):
+                if Database.update_list[i][1] == update_id:
+                    print("Should be more: " + str(Database.update_list))
+                    del Database.update_list[i]
+                    print("Should be less: " + str(Database.update_list))
+                    return True
+        return False
 
 
     def new_query(self, timestamp, movie_name):
@@ -150,6 +158,7 @@ class Database:
                 Database.executed_updates.append(item[1])
                 Database.all_updates.append((item[0], item[1], item[2], item[3], item[4]))
                 Database.timestamp_table[this_server_num].append(item[0])
+                Database.check_timestamp_table(0, item[0], item[1])
                 Database.value_timestamp[this_server_num] += 1
 
         print("New Gossip Update")
@@ -157,7 +166,7 @@ class Database:
 
 
         for item in Database.update_list:
-            #print("Looping through update list")
+
             server_list = get_server_list()
             print(server_list)
             for other_server in server_list:
