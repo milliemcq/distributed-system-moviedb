@@ -24,7 +24,7 @@ class Database:
     all_updates = []
     executed_updates = []
 
-    timestamp_table = [[], []]
+    timestamp_table = [[], [], []]
 
     def get_status(self):
         if len(Database.update_list) > 10:
