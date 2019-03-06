@@ -118,8 +118,9 @@ class Database:
             Database.update_list.append((timestamp, update_id, movie_name, user_id, rating))
             return timestamp
 
-        def get_num():
-            return this_server_num
+    @staticmethod
+    def get_num():
+        return this_server_num
 
 
     def check_timestamp_table(self, timestamp, update_id):
