@@ -84,11 +84,11 @@ class Database:
                 print("Update already processed within gossip")
                 return "Update already processed"
 
-
-            Database.replica_timestamp[this_server_num] += 1
-            #timestamp[this_server_num] = Database.replica_timestamp[this_server_num]
-            print("APPENDING BECAUSE GOSSIP SAYS SO")
-            Database.update_list.append((timestamp, update_id, movie_name, user_id, rating))
+            if update_id not in Database.executed_updates:
+                Database.replica_timestamp[this_server_num] += 1
+                #timestamp[this_server_num] = Database.replica_timestamp[this_server_num]
+                print("APPENDING BECAUSE GOSSIP SAYS SO")
+                Database.update_list.append((timestamp, update_id, movie_name, user_id, rating))
 
             return timestamp
         else:
