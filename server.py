@@ -28,6 +28,7 @@ class Database:
 
     def get_status(self):
         if len(Database.update_list) > 10:
+            print("Overloaded Update List: " + str(Database.update_list))
             print("Returning Overloaded")
             return "overloaded"
         num = random.uniform(0, 1)
@@ -80,17 +81,25 @@ class Database:
             if timestamp not in Database.timestamp_table[server]:
                 Database.timestamp_table[server].append(timestamp)
 
-
             if Database.check_timestamp_table(self, timestamp, update_id):
                 #print("Update already processed within gossip")
                 return "Update already processed"
 
-            if update_id not in Database.executed_updates:
-                Database.replica_timestamp[this_server_num] += 1
-                #timestamp[this_server_num] = Database.replica_timestamp[this_server_num]
-                print("Timestamp table - should not show this update for this server!!" + str(Database.timestamp_table))
-                print("APPENDING BECAUSE GOSSIP SAYS TO")
-                Database.update_list.append((timestamp, update_id, movie_name, user_id, rating))
+            #ensuring if update recieved from two servers before gossip, only one gets added to update list & append ReplicaTS
+            in_update_list = False
+            print("TO LOOP OVER: " + str(Database.update_list))
+            for i in range(len(Database.update_list)):
+                print("SHOULD HAVE VALUE AT 1: " + str(Database.update_list[i]))
+                if Database.update_list[i][1] == update_id:
+                    in_update_list == True
+
+            if not in_update_list:
+                if update_id not in Database.executed_updates:
+                    Database.replica_timestamp[this_server_num] += 1
+                    #timestamp[this_server_num] = Database.replica_timestamp[this_server_num]
+                    print("Timestamp table - should not show this update for this server!!" + str(Database.timestamp_table))
+                    print("APPENDING BECAUSE GOSSIP SAYS TO")
+                    Database.update_list.append((timestamp, update_id, movie_name, user_id, rating))
 
             return timestamp
         else:
@@ -108,6 +117,9 @@ class Database:
             print("APPENDING BECAUSE FRONT END SAYS SO")
             Database.update_list.append((timestamp, update_id, movie_name, user_id, rating))
             return timestamp
+
+        def get_num():
+            return this_server_num
 
 
     def check_timestamp_table(self, timestamp, update_id):
@@ -129,7 +141,7 @@ class Database:
                     print("Should be more: " + str(Database.update_list))
                     del Database.update_list[i]
                     print("Should be less: " + str(Database.update_list))
-
+                    return found
 
         return found
 
@@ -157,8 +169,8 @@ class Database:
         print("SERVER %s GOSSIPING", this_server_num)
         print("Update list before gossip: " + str(Database.update_list))
 
-        for item in Database.update_list:
-            Database.check_timestamp_table(0, item[0], item[1])
+        #for item in Database.update_list:
+         #   Database.check_timestamp_table(0, item[0], item[1])
 
         print("Timestamp Table inside Gossip: ", Database.timestamp_table)
         Database.update_list = sorted(Database.update_list, key=sort_tuple)
@@ -183,11 +195,14 @@ class Database:
         for item in Database.update_list:
             server_list = get_server_list()
             #print(server_list)
+            print("SHOULD NEVER BE 3: " + str(len(server_list)))
             for other_server in server_list:
                 #print("Sending to other server")
                 #print("this server num: " + str(this_server_num))
-                print("Sending update to other server - sending update to other server")
-                other_timestamp = other_server.new_update(item[0], item[1], item[2], item[3], item[4], True, this_server_num)
+                other_server_num = other_server.get_num()
+                if item[0] not in Database.timestamp_table[other_server_num]:
+                    print("Sending update to other server - sending update to other server")
+                    other_timestamp = other_server.new_update(item[0], item[1], item[2], item[3], item[4], True, this_server_num)
 
         for item in Database.update_list:
             Database.check_timestamp_table(0, item[0], item[1])
