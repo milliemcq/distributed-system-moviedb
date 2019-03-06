@@ -28,7 +28,7 @@ class Database:
     timestamp_table = [[], [], []]
 
     def get_status(self):
-        if len(Database.update_list) > 10:
+        if len(Database.update_list) > 100:
             print("Overloaded Update List: " + str(Database.update_list))
             print("Returning Overloaded")
             return "overloaded"
@@ -70,6 +70,7 @@ class Database:
         return rating_dict
 
     def new_update(self, timestamp, update_id, movie_name, user_id, rating, gossip, server):
+        print("GOSSIP VALUE TIMESTAMP: " + str(Database.value_timestamp))
         print("RATING DICT FOR MOVIE CURRENTLY = ")
         Database.average_rating(self, movie_name)
         #print(Database.timestamp_table)
@@ -88,9 +89,9 @@ class Database:
 
             #ensuring if update recieved from two servers before gossip, only one gets added to update list & append ReplicaTS
             in_update_list = False
-            print("TO LOOP OVER: " + str(Database.update_list))
+            #print("TO LOOP OVER: " + str(Database.update_list))
             for i in range(len(Database.update_list)):
-                print("SHOULD HAVE VALUE AT 1: " + str(Database.update_list[i]))
+                #print("SHOULD HAVE VALUE AT 1: " + str(Database.update_list[i]))
                 if Database.update_list[i][1] == update_id:
                     in_update_list == True
 
@@ -101,6 +102,8 @@ class Database:
                     print("Timestamp table - should not show this update for this server!!" + str(Database.timestamp_table))
                     print("APPENDING BECAUSE GOSSIP SAYS TO")
                     Database.update_list.append((timestamp, update_id, movie_name, user_id, rating))
+
+
 
             return timestamp
         else:
@@ -122,6 +125,10 @@ class Database:
     @staticmethod
     def get_num():
         return this_server_num
+
+    @staticmethod
+    def get_value_timestamp():
+        return Database.value_timestamp
 
 
     def check_timestamp_table(self, timestamp, update_id):
@@ -150,6 +157,7 @@ class Database:
 
     def new_query(self, timestamp, movie_name):
         print("Making a new query at timestamp %s for movie name %s", timestamp, movie_name)
+        print("BACKEND TIMESTAMP = " + str(Database.value_timestamp))
         greatest_time = Database.compare_timestamp(self, timestamp)
         print(this_server_num)
         if greatest_time <= Database.value_timestamp[this_server_num]:
@@ -206,13 +214,13 @@ class Database:
                 #print("this server num: " + str(this_server_num))
                 other_server_num = other_server.get_num()
                 if item[0] not in Database.timestamp_table[other_server_num]:
-                    print("Sending update to other server - sending update to other server")
+                    #print("Sending update to other server - sending update to other server")
                     other_timestamp = other_server.new_update(item[0], item[1], item[2], item[3], item[4], True, this_server_num)
 
         for item in Database.update_list:
             Database.check_timestamp_table(0, item[0], item[1])
         # print("Should be different + " + str(Database.average_rating("Horns")))
-        threading.Timer(5, Database.gossip).start()
+        threading.Timer(1, Database.gossip).start()
         print("GOSSIP FINISHED")
 
 
@@ -261,7 +269,7 @@ sys.excepthook = Pyro4.util.excepthook
 
 
 
-threading.Timer(5, Database.gossip).start()
+threading.Timer(1, Database.gossip).start()
 daemon.requestLoop()
 
 

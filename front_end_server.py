@@ -49,20 +49,14 @@ class NameServer:
 
     #iterate over servers until one has the highest timestamp, and collect the results from this server.
     def average_rating(self, movie_name):
+        print("FRONT END TIMESTAMP = " + str(self.fe_timestamp_vector))
         chosen_server = self.choose_server(0)
         if chosen_server == 1:
-            return "No current server available"
+            return "No current server available, Try again in a few seconds"
         server = chosen_server[0]
         response = server.new_query(self.fe_timestamp_vector, movie_name)
         print("Average Response: " + str(response))
         return response
-        """
-        while response == 0:
-            new_server = self.choose_server(server[1])
-            response = new_server.new_query(self.timestamp_vector, movie_name)
-        return response"""
-
-
 
 
     def get_user_rating(self):
