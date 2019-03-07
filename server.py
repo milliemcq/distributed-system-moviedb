@@ -34,8 +34,11 @@ class Database:
             return "overloaded"
         num = random.uniform(0, 1)
         if num < 0.99:
+            threading.Timer(1, Database.gossip).start()
             return "online"
+
         print("Returning Offline")
+        threading.Timer(1, Database.gossip).stop()
         return "offline"
 
     def add_rating(self, movie_title, user_id, rating):
@@ -123,6 +126,11 @@ class Database:
     def get_value_timestamp():
         return Database.value_timestamp
 
+
+    #TODO - THIS
+    @staticmethod
+    def get_all_updates():
+        return Database.all_updates
 
     def check_timestamp_table(self, timestamp, update_id):
         found = True
