@@ -176,57 +176,35 @@ class Database:
 
     @staticmethod
     def gossip():
-        print("SERVER %s GOSSIPING", this_server_num)
+        print("SERVER GOSSIPING")
         print("Update list before gossip: " + str(Database.update_list))
 
-        #for item in Database.update_list:
-         #   Database.check_timestamp_table(0, item[0], item[1])
-
-        print("Timestamp Table inside Gossip: ", Database.timestamp_table)
         Database.update_list = sorted(Database.update_list, key=sort_tuple)
-        #print(Database.update_list)
         for item in Database.update_list:
             if item[1] not in Database.executed_updates:
-            #if item[0][this_server_num] == Database.value_timestamp[this_server_num] + 1:
                 Database.add_rating(0, item[2], item[3], item[4])
                 Database.executed_updates.append(item[1])
                 Database.all_updates.append((item[0], item[1], item[2], item[3], item[4]))
-                #print(Database.timestamp_table)
                 Database.timestamp_table[this_server_num].append(item[0])
-                #Database.check_timestamp_table(0, item[0], item[1])
                 Database.value_timestamp[this_server_num] += 1
-                print("Timestamp table within gossip processing updates: " + str(Database.timestamp_table))
-                print("Update list shouldn't include anything in all timestamp table: " + str(Database.update_list))
-
-
-        print("New Gossip Update")
-
-
-
-
 
         for item in Database.update_list:
             server_list = get_server_list()
-            #print(server_list)
-            print("SHOULD NEVER BE 3: " + str(len(server_list)))
             for other_server in server_list:
-                #print("Sending to other server")
-                #print("this server num: " + str(this_server_num))
+
                 other_server_num = other_server.get_num()
-                #if item[0] not in Database.timestamp_table[other_server_num]:
-                    #print("Sending update to other server - sending update to other server")
+
                 other_timestamp = other_server.new_update(item[0], item[1], item[2], item[3], item[4], True, this_server_num)
 
         for item in Database.update_list:
             Database.check_timestamp_table(0, item[0], item[1])
-        # print("Should be different + " + str(Database.average_rating("Horns")))
+
         threading.Timer(1, Database.gossip).start()
         print("GOSSIP FINISHED")
 
 
 
 def sort_tuple(item):
-    #print("Sorting Tuple")
     return item[0][this_server_num]
 
 def get_server_list():
@@ -236,9 +214,7 @@ def get_server_list():
         if str(item) != str(uri):
             server = Pyro4.Proxy(item)
             if server.get_status() == "online":
-                #print("Adding server")
                 server_list.append(server)
-    #print("Server List = " + str(server_list))
     return server_list
 
 
@@ -267,18 +243,9 @@ print("Server Ready: Object URI = " + str(num_servers + 1))
 
 sys.excepthook = Pyro4.util.excepthook
 
-
-
 threading.Timer(1, Database.gossip).start()
 daemon.requestLoop()
 
 
 print("Loop Stopped")
 
-
-"""
-Giving other servers access to one another
-
-Update log greater than size 10, can't accept anything - call - overloaded -
-
-"""
