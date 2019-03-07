@@ -54,17 +54,26 @@ class NameServer:
         if chosen_server == 1:
             return "No current server available, Try again in a few seconds"
         server = chosen_server[0]
+        #TODO - iterate over servers till found one up to date
         response = server.new_query(self.fe_timestamp_vector, movie_name)
         print("Average Response: " + str(response))
         return response
 
 
-    def get_user_rating(self):
-        try:
-          self.server = self.choose_server()
-        except:
-            return "No online server found"
-        self.server.add_rating(movie_name, user_id, rating)
+    def get_user_rating(self, user_id, movie_name):
+        print(user_id)
+        print(movie_name)
+        print("FRONT END TIMESTAMP = " + str(self.fe_timestamp_vector))
+        chosen_server = self.choose_server(0)
+        if chosen_server == 1:
+            return "No current server available, Try again in a few seconds"
+        server = chosen_server[0]
+        # TODO - iterate over servers till found one up to date
+        response = server.get_user_rating(self.fe_timestamp_vector, user_id ,movie_name)
+        print(response)
+        return response
+
+
 
 
 

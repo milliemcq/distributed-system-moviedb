@@ -23,6 +23,7 @@ class Database:
     value_timestamp = [0, 0, 0]
     all_updates = []
     executed_updates = []
+    offline = False
 
 
     timestamp_table = [[], [], []]
@@ -34,11 +35,12 @@ class Database:
             return "overloaded"
         num = random.uniform(0, 1)
         if num < 0.99:
+            Database.offline = False
             threading.Timer(1, Database.gossip).start()
             return "online"
 
         print("Returning Offline")
-        threading.Timer(1, Database.gossip).stop()
+        Database.offline = True
         return "offline"
 
     def add_rating(self, movie_title, user_id, rating):
@@ -66,8 +68,7 @@ class Database:
         else:
             return "No movie found"
 
-    def get_user_rating(self, movie, user_id):
-        return rating_dict[movie][user_id]
+
 
     def get_rating_dict(self):
         return rating_dict
@@ -161,6 +162,20 @@ class Database:
         return "No up to date server found"
 
 
+    def get_user_rating(self, timestamp, user_id, movie_name):
+        print(user_id)
+        print(movie_name)
+        print(rating_dict[movie_name])
+        Database.average_rating(self, movie_name)
+        print("Getting user rating")
+        greatest_time = Database.compare_timestamp(self, timestamp)
+
+        if greatest_time <= Database.value_timestamp[this_server_num]:
+            if user_id not in rating_dict[movie_name].keys():
+                return "No Rating"
+            return rating_dict[movie_name][user_id]
+        return "Behind"
+
     def compare_timestamp(self, timestamp):
         num = 0
         print(timestamp)
@@ -172,31 +187,31 @@ class Database:
 
     @staticmethod
     def gossip():
-        print("SERVER GOSSIPING")
-        print("Update list before gossip: " + str(Database.update_list))
+        if not Database.offline:
+            print("SERVER GOSSIPING")
+            print("Update list inside gossip: " + str(Database.update_list))
+            print("Timestamp inside server: " + str(Database.value_timestamp))
+            Database.update_list = sorted(Database.update_list, key=sort_tuple)
+            for item in Database.update_list:
+                if item[1] not in Database.executed_updates:
+                    Database.add_rating(0, item[2], item[3], item[4])
+                    Database.executed_updates.append(item[1])
+                    Database.all_updates.append((item[0], item[1], item[2], item[3], item[4]))
+                    Database.timestamp_table[this_server_num].append(item[0])
+                    Database.value_timestamp[this_server_num] += 1
 
-        Database.update_list = sorted(Database.update_list, key=sort_tuple)
-        for item in Database.update_list:
-            if item[1] not in Database.executed_updates:
-                Database.add_rating(0, item[2], item[3], item[4])
-                Database.executed_updates.append(item[1])
-                Database.all_updates.append((item[0], item[1], item[2], item[3], item[4]))
-                Database.timestamp_table[this_server_num].append(item[0])
-                Database.value_timestamp[this_server_num] += 1
+            for item in Database.update_list:
+                server_list = get_server_list()
+                for other_server in server_list:
 
-        for item in Database.update_list:
-            server_list = get_server_list()
-            for other_server in server_list:
+                    other_server_num = other_server.get_num()
 
-                other_server_num = other_server.get_num()
+                    other_timestamp = other_server.new_update(item[0], item[1], item[2], item[3], item[4], True, this_server_num)
 
-                other_timestamp = other_server.new_update(item[0], item[1], item[2], item[3], item[4], True, this_server_num)
+            for item in Database.update_list:
+                Database.check_timestamp_table(0, item[0], item[1])
 
-        for item in Database.update_list:
-            Database.check_timestamp_table(0, item[0], item[1])
-
-        threading.Timer(1, Database.gossip).start()
-        print("GOSSIP FINISHED")
+            threading.Timer(1, Database.gossip).start()
 
 
 
@@ -225,7 +240,9 @@ num_servers = len(server_dict.keys()) - 1
 
 this_server_num = num_servers + 1
 
-
+#TODO - GET ALL UPDATES IF NEW SERVER
+if num_servers > 0:
+    pass
 
 timestamp_table = [[] for _ in range(num_servers)]
 

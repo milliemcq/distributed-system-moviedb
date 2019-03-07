@@ -5,13 +5,15 @@ import Pyro4
 
 print("Welcome to the Gossip Architecture movie rating system!")
 
+
+
 #Get the user ID and return as lowercase
 user_id = input("Please enter your user ID: ")
 while user_id == "":
     print("Cannot input empty string")
     user_id = input("Please enter your user ID: ")
 
-user_id = user_id.lower()
+user_id = user_id.strip()
 
 
 #Connecting to the front end server
@@ -19,6 +21,10 @@ with Pyro4.locateNS() as name_server:
     uri = name_server.lookup("frontEnd")
 
 front_end_server = Pyro4.Proxy(uri)
+
+
+#print("Rating: " + str(front_end_server.get_user_rating('1', "Horns")))
+
 
 
 def run_instruction(instruction):
@@ -51,6 +57,17 @@ while instruction != "quit":
         print("Cannot input empty string")
         movie_name = input("What movie would you like to open?: ")
 
+    movie_name.strip()
+
+    current_rating = front_end_server.get_user_rating(user_id, movie_name)
+    if current_rating == "No Rating":
+        print("You have not yet entered a rating for this movie.")
+    elif current_rating == "Behind":
+        print("No Current Server available to check current rating")
+    else:
+        print("Your current rating for this movie is: " + str(current_rating))
+
+
     instruction = input("Would you like to add/update a rating (add/update) or view the average rating for this movie? (average)? ")
     instruction = instruction.lower()
     while instruction == "":
@@ -58,8 +75,9 @@ while instruction != "quit":
             "Would you like to update your rating (update) or view the average rating for this movie? (average)? ")
         instruction = instruction.lower()
 
-    run_instruction(instruction)
+    instruction.strip()
 
+    run_instruction(instruction)
 
 
 
