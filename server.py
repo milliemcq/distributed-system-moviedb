@@ -33,7 +33,7 @@ class Database:
             print("Returning Overloaded")
             return "overloaded"
         num = random.uniform(0, 1)
-        if num < 0.9:
+        if num < 0.99:
             return "online"
         print("Returning Offline")
         return "offline"
@@ -213,9 +213,9 @@ class Database:
                 #print("Sending to other server")
                 #print("this server num: " + str(this_server_num))
                 other_server_num = other_server.get_num()
-                if item[0] not in Database.timestamp_table[other_server_num]:
+                #if item[0] not in Database.timestamp_table[other_server_num]:
                     #print("Sending update to other server - sending update to other server")
-                    other_timestamp = other_server.new_update(item[0], item[1], item[2], item[3], item[4], True, this_server_num)
+                other_timestamp = other_server.new_update(item[0], item[1], item[2], item[3], item[4], True, this_server_num)
 
         for item in Database.update_list:
             Database.check_timestamp_table(0, item[0], item[1])
