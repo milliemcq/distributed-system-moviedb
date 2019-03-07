@@ -98,9 +98,6 @@ class Database:
             if not in_update_list:
                 if update_id not in Database.executed_updates:
                     Database.replica_timestamp[this_server_num] += 1
-                    #timestamp[this_server_num] = Database.replica_timestamp[this_server_num]
-                    print("Timestamp table - should not show this update for this server!!" + str(Database.timestamp_table))
-                    print("APPENDING BECAUSE GOSSIP SAYS TO")
                     Database.update_list.append((timestamp, update_id, movie_name, user_id, rating))
 
 
@@ -111,14 +108,10 @@ class Database:
             if update_id in Database.executed_updates:
                 return timestamp
 
-
-
             Database.replica_timestamp[this_server_num] += 1
             timestamp[this_server_num] = Database.replica_timestamp[this_server_num]
 
             print("Making a new update at timestamp %s for movie name %s", timestamp, movie_name)
-            print("Timestamp Adding: " + str(timestamp))
-            print("APPENDING BECAUSE FRONT END SAYS SO")
             Database.update_list.append((timestamp, update_id, movie_name, user_id, rating))
             return timestamp
 
@@ -132,19 +125,14 @@ class Database:
 
 
     def check_timestamp_table(self, timestamp, update_id):
-        #print("Update id: " + str(update_id))
         found = True
         for used_timestamp_list in Database.timestamp_table:
             if timestamp in used_timestamp_list:
-                #print("FOUND!")
                 continue
-            #print("Making found False")
             found = False
 
         print(found)
         if found:
-            #print(Database.update_list)
-            # find timestamp and remove on index
             for i in range(len(Database.update_list)):
                 if Database.update_list[i][1] == update_id:
                     print("Should be more: " + str(Database.update_list))
